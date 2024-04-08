@@ -36,7 +36,7 @@ public class CombactManagerNew : MonoBehaviour
         deadUnits.Clear();
         foreach (UnitNew u in allUnits)
         {
-            
+            deads.Count;
             if (u.soldiers.Count == 0)
             {
                 deadUnits.Add(u);
@@ -55,6 +55,10 @@ public class CombactManagerNew : MonoBehaviour
             foreach(var s in u.soldiers)
                 if (s.health < 0)
                     deads.Add(s);
+            
+            //pass the varible to the unit script to update the morale status
+            float lossPercentage = (deads.Count / (float)u.initialSoldiersCount) * 100f;
+            u.DecreaseMoraleOnLoss(lossPercentage);
 
             foreach(var d in deads)
             {
@@ -157,6 +161,9 @@ public class CombactManagerNew : MonoBehaviour
             }
             else
                 k = 0;
+
+            //placeholder to put the function to check for the specific morale setting
+            //and set the moving direction of the unit
 
             CheckForDeads();
             UpdateCUnit();

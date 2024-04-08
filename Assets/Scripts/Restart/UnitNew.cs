@@ -43,8 +43,9 @@ public class UnitNew : MonoBehaviour
     public float halfHeight { get { return meleeCollider.size.z / 2f; } }
 
     //Morale Properties
+    public int initialSoldiersCount;
     public float morale = 70; // Base morale
-    private float moraleUpdateTime = 1f; // Time in seconds to update morale
+    private float moraleUpdateTime = 5f; // Time in seconds to update morale
     private float lastMoraleUpdateTime = 0;
 
     public enum MoraleState { Impetuous, Eager, Confident, Steady, Wavering, Routing }
@@ -231,6 +232,7 @@ public class UnitNew : MonoBehaviour
 
         cunit = gameObject.AddComponent<CUnitNew>();
         cunit.Initialize(this, pC, meleeStats.noise, meleeStats.attackingFactor);
+        
 
     }
     private void SetLinks(MeleeStatsHolder meleeStats, ArmyNew army)
@@ -254,6 +256,10 @@ public class UnitNew : MonoBehaviour
             s.Initialize(this, meleeStats, pos, dir);
             soldiers.Add(s);
         }
+
+
+        //morale needed
+        initialSoldiersCount = soldiers.Count;
     }
     #endregion
 

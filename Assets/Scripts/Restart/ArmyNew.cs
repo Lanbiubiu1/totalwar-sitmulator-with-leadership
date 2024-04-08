@@ -44,11 +44,16 @@ public class ArmyNew : MonoBehaviour
     public float expansion = 1f;
     public bool DEBUG_MODE;
 
+    
+
+
     public List<UnitNew> units;
     public List<List<UnitNew>> partions;
 
 
     private Vector3[] res;
+
+
 
 
     public string enemySoldierLayer
