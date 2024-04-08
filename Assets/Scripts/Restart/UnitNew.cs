@@ -42,6 +42,59 @@ public class UnitNew : MonoBehaviour
     public float halfWidth { get { return meleeCollider.size.x / 2f; } }
     public float halfHeight { get { return meleeCollider.size.z / 2f; } }
 
+    //Morale Properties
+    public float morale = 70; // Base morale
+    private float moraleUpdateTime = 1f; // Time in seconds to update morale
+    private float lastMoraleUpdateTime = 0;
+
+    public enum MoraleState { Impetuous, Eager, Confident, Steady, Wavering, Routing }
+    public MoraleState currentMoraleState;
+
+    private void InitializeMorale()
+    {
+        UpdateMoraleState();
+    }
+
+    public void UpdateMoraleState()
+    {
+        if (morale > 110) currentMoraleState = MoraleState.Impetuous;
+        else if (morale >= 90) currentMoraleState = MoraleState.Eager;
+        else if (morale >= 65) currentMoraleState = MoraleState.Confident;
+        else if (morale >= 30) currentMoraleState = MoraleState.Steady;
+        else if (morale >= 0) currentMoraleState = MoraleState.Wavering;
+        else currentMoraleState = MoraleState.Routing;
+    }
+
+    private void RecoverMorale()
+    {
+        morale += 10; // Recover morale
+        lastMoraleUpdateTime = Time.time;
+        UpdateMoraleState();
+    }
+
+    //need to find a way to pass in the loss percentage
+    public void DecreaseMoraleOnLoss(float lossPercentage)
+    {
+        if (lossPercentage >= 90) morale -= 60;
+        else if (lossPercentage >= 80) morale -= 55;
+        else if (lossPercentage >= 20) morale -= 5;
+
+        UpdateMoraleState();
+    }
+
+    //need to call when specific event is triggered
+    public void ApplyMoraleBuff(float buffAmount)
+    {
+        morale += buffAmount;
+        UpdateMoraleState();
+    }
+
+    //need to call when specific event is triggered
+    public void ApplyMoraleDebuff(float debuffAmount)
+    {
+        morale -= debuffAmount;
+        UpdateMoraleState();
+    }
 
 
     public Coordinate[] rectangle
@@ -221,7 +274,7 @@ public class UnitNew : MonoBehaviour
             StartCoroutine(JustLetItPass());
         }
 
-
+        RecoverMorale();
     }
 
     
