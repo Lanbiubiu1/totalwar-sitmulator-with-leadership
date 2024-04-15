@@ -126,21 +126,30 @@ public class DefenderAgent : Agent
                 Vector3 oldPosition = unit.position;
 
                 Vector3 newPosition = new Vector3(posX, 0, posZ);
-                float movementSpeed = 2f;
+                float movementSpeed = 10f;
                 //unit.cunit.MoveAt(newPosition);
-                unit.cunit.MoveAt(new List<Vector3>(){ unit.position + newPosition * movementSpeed * Time.deltaTime, newPosition }); 
+                unit.cunit.MoveAt(new List<Vector3>(){ oldPosition + newPosition * movementSpeed * Time.deltaTime}); 
 
                 if (unit.position != oldPosition)
                 {
-                    SetReward(1f);  // Positive reward for successful action
+                    SetReward(+0.2f);  // Positive reward for successful action
                 }
                 else
                 {
-                    SetReward(-1f);
+                    SetReward(-0.1f);
                 }
+                InCombate(unit);
             }
 
         }
 
+    }
+
+    private void InCombate(UnitNew myUnit){
+        if(myUnit.isInFight){
+            SetReward(+1f);
+        }else{
+            SetReward(-0.5f);
+        }
     }
 }

@@ -2,22 +2,22 @@
     "DefenderBehaviour": {
         "checkpoints": [
             {
-                "steps": 512,
-                "file_path": "results\\base-test1\\DefenderBehaviour\\DefenderBehaviour-512.onnx",
+                "steps": 320,
+                "file_path": "results\\base-test1\\DefenderBehaviour\\DefenderBehaviour-320.onnx",
                 "reward": null,
-                "creation_time": 1713162726.4101171,
+                "creation_time": 1713207195.8387344,
                 "auxillary_file_paths": [
-                    "results\\base-test1\\DefenderBehaviour\\DefenderBehaviour-512.pt"
+                    "results\\base-test1\\DefenderBehaviour\\DefenderBehaviour-320.pt"
                 ]
             }
         ],
         "final_checkpoint": {
-            "steps": 512,
+            "steps": 320,
             "file_path": "results\\base-test1\\DefenderBehaviour.onnx",
             "reward": null,
-            "creation_time": 1713162726.4101171,
+            "creation_time": 1713207195.8387344,
             "auxillary_file_paths": [
-                "results\\base-test1\\DefenderBehaviour\\DefenderBehaviour-512.pt"
+                "results\\base-test1\\DefenderBehaviour\\DefenderBehaviour-320.pt"
             ]
         }
     },
