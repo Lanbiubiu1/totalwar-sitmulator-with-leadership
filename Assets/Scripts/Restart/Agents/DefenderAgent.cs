@@ -85,16 +85,77 @@ public class DefenderAgent : Agent
 
     }
 
-
+    /// <summary>
+    /// size of units(fixed for simplicity) is 11 as appeared in game, modify if causing problems
+    /// index 0: 1st unit id
+    /// index 1: location.x
+    /// index 2: location.z
+    /// same as above change unit id repeat for all unit(loop)
+    /// </summary>
+    /// <param name="actionBuffers">should be just an array of int/float values</param>
     // Process actions received from the neural network. Here, a reward of 1.0f is given for any received action.
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
+        //1. set selectedunit using unit id
 
-        // Assign a reward for the received action.
-        SetReward(1.0f);
+        //2. use selectedunit.moveat(provided function in CUnitNew.cs) to move unit to new location
+
+        //3. set reward for the move(all positive for now maybe negative if hit walls if it's easy to implement)
+
+        //repeat for all unit
+
+
+        
+
+        int totalUnits = actionBuffers.ContinuousActions.Length / 3; // Since each unit uses 3 values
+
+        for (int i = 0; i < totalUnits; i++)
+        {
+            // Calculating the index for each piece of information
+            int unitIdIndex = i * 3;
+            int posXIndex = unitIdIndex + 1;
+            int posZIndex = unitIdIndex + 2;
+
+            // Fetching the data for each unit
+            int unitId = (int)actionBuffers.ContinuousActions[unitIdIndex]; // Cast to int if your IDs are integers
+            float posX = actionBuffers.ContinuousActions[posXIndex];
+            float posZ = actionBuffers.ContinuousActions[posZIndex];
+
+            // Finding the unit and moving it
+            UnitNew unit = FindUnitById(unitId);
+            if (unit != null && unit.cunit != null)
+            {
+                Vector3 newPosition = new Vector3(posX, 0, posZ);
+                unit.cunit.MoveAt(newPosition);  
+                SetReward(1f);  // Positive reward for successful action
+            }
+            
+        }
+
+        
+
+        
+        
 
     }
 
+    // Assuming a method to find a unit by its ID exists
+    private UnitNew FindUnitById(int id)
+    {
+        // Iterate through each unit in the units collection
+        foreach (UnitNew unit in army.units)
+        {
+            // Check if the current unit's ID matches the provided ID
+            if (unit.ID == id)
+            {
+                // If a match is found, return the current unit
+                return unit;
+            }
+        }
+
+        // If no matching unit is found, return null
+        return null;
+    }
 
 
 }
