@@ -48,7 +48,7 @@ public class DefenderAgent : Agent
         sensor.AddObservation(u.ID); 
         sensor.AddObservation(new Vector2(u.transform.position.x, u.transform.position.z));
         sensor.AddObservation(new Vector2(u.transform.forward.x, u.transform.forward.z));
-        sensor.AddObservation(u.range); // Add archer range as observation.
+        //sensor.AddObservation(u.range); // Add archer range as observation.
     }
 
     // Collect observations from the environment to be used by the neural network for making decisions.
@@ -85,16 +85,62 @@ public class DefenderAgent : Agent
 
     }
 
+    // Assuming a method to find a unit by its ID exists
+    private UnitNew FindUnitById(int id)
+    {
+        // Iterate through each unit in the units collection
+        foreach (UnitNew unit in army.units)
+        {
+            // Check if the current unit's ID matches the provided ID
+            if (unit.ID == id)
+            {
+                // If a match is found, return the current unit
+                return unit;
+            }
+        }
+
+        // If no matching unit is found, return null
+        return null;
+    }
 
     // Process actions received from the neural network. Here, a reward of 1.0f is given for any received action.
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
+        //1. set selectedunit using unit id
 
-        // Assign a reward for the received action.
-        SetReward(1.0f);
+        //2. use selectedunit.moveat(provided function in CUnitNew.cs) to move unit to new location
+
+        //3. set reward for the move(all positive for now maybe negative if hit walls if it's easy to implement)
+
+        //repeat for all unit
+
+        for (int i = 0; i < army.units.Count; i++){
+            int actionIndex = i * 2;
+            UnitNew unit = army.units[i];
+
+            float posX = actionBuffers.ContinuousActions[actionIndex];
+            float posZ = actionBuffers.ContinuousActions[actionIndex+1];
+
+            if (unit != null && unit.cunit != null)
+            {
+                Vector3 oldPosition = unit.position;
+
+                Vector3 newPosition = new Vector3(posX, 0, posZ);
+                float movementSpeed = 2f;
+                //unit.cunit.MoveAt(newPosition);
+                unit.cunit.MoveAt(new List<Vector3>(){ unit.position + newPosition * movementSpeed * Time.deltaTime, newPosition }); 
+
+                if (unit.position != oldPosition)
+                {
+                    SetReward(1f);  // Positive reward for successful action
+                }
+                else
+                {
+                    SetReward(-1f);
+                }
+            }
+
+        }
 
     }
-
-
-
 }
