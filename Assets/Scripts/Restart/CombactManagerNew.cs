@@ -36,7 +36,7 @@ public class CombactManagerNew : MonoBehaviour
         deadUnits.Clear();
         foreach (UnitNew u in allUnits)
         {
-            deads.Count;
+            deads.Count();
             if (u.soldiers.Count == 0)
             {
                 deadUnits.Add(u);
