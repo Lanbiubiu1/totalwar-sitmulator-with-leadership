@@ -149,6 +149,7 @@ public class DefenderAgent : Agent
             if (unit.ID == id)
             {
                 // If a match is found, return the current unit
+                //SetReward(1f);
                 return unit;
             }
         }

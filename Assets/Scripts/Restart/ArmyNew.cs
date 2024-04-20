@@ -49,6 +49,8 @@ public class ArmyNew : MonoBehaviour
 
     public List<UnitNew> units;
     public List<List<UnitNew>> partions;
+    //propagators
+    //public List<SimplePropagator> propagators;
 
 
     private Vector3[] res;
@@ -219,6 +221,7 @@ public class ArmyNew : MonoBehaviour
         WriteDownArmySpec();
 
         units = new List<UnitNew>(infantryStats.Count + archersStats.Count + cavalryStats.Count);
+        //propagators = new List<SimplePropagator>(infantryStats.Count + archersStats.Count + cavalryStats.Count);
         infantryUnits = new List<UnitNew>(infantryStats.Count);
         archerUnits = new List<ArcherNew>(archersStats.Count);
         cavalryUnits = new List<UnitNew>(cavalryStats.Count);
@@ -322,12 +325,20 @@ public class ArmyNew : MonoBehaviour
         curUnit.transform.position = pos;
         curUnit.transform.rotation = Quaternion.Euler(transform.forward);
         curUnit.transform.parent = transform;
+        
 
         var unitMB = curUnit.AddComponent<UnitNew>();
         unitMB.Instantiate(pos, transform.forward, u.meleeHolder, soldiersHolder, u.soldierPrefab, this);
         unitMB.ID = i;
         list.Add(unitMB);
         units.Add(unitMB);
+        curUnit.AddComponent<SimplePropagator>();
+        curUnit.GetComponent<SimplePropagator>()._server = GameObject.Find("InfluenceMap").GetComponent<InfluenceMapServer>();
+        curUnit.GetComponent<SimplePropagator>()._value = 1;
+        curUnit.GetComponent<SimplePropagator>().type = "Soldier";
+        if (role is ArmyRole.ATTACKER) curUnit.GetComponent<SimplePropagator>().squadNo = 1;
+        else curUnit.GetComponent<SimplePropagator>().squadNo = 0;
+
 
         var frontExp = CalculateFrontalExpansion(u.meleeHolder.soldierDistVertical, u.meleeHolder.startingNumOfSoldiers, u.meleeHolder.startingCols, expansion);
         var latExp = CalculateLateralExpansion(u.meleeHolder.soldierDistLateral, u.meleeHolder.startingCols, expansion);
@@ -366,6 +377,9 @@ public class ArmyNew : MonoBehaviour
         curUnit.transform.position = pos;
         curUnit.transform.rotation = Quaternion.LookRotation(transform.forward);
         curUnit.transform.parent = transform;
+        
+
+
 
         var unitMB = AddArcherComponent(curUnit, pos, u.meleeStats.meleeHolder, u.meleeStats.soldierPrefab, u.rangedStats.rangedHolder, u.rangedStats.arrow);
         unitMB.ID = i;
@@ -380,7 +394,13 @@ public class ArmyNew : MonoBehaviour
         unitMB.rangeShader = sc.GetComponent<Projector>();
         unitMB.rangeShader.orthographicSize = u.rangedStats.rangedHolder.range + 5;
         unitMB.rangeShader.enabled = false;
-
+        //propagator
+        curUnit.AddComponent<SimplePropagator>();
+        curUnit.GetComponent<SimplePropagator>()._server = GameObject.Find("InfluenceMap").GetComponent<InfluenceMapServer>();
+        curUnit.GetComponent<SimplePropagator>()._value = 1;
+        curUnit.GetComponent<SimplePropagator>().type = "Soldier";
+        if (role is ArmyRole.ATTACKER) curUnit.GetComponent<SimplePropagator>().squadNo = 1;
+        else curUnit.GetComponent<SimplePropagator>().squadNo = 0;
         archerUnits.Add(unitMB);
 
     }
