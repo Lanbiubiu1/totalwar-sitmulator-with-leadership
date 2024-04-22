@@ -85,6 +85,15 @@ public class DefenderAgent : Agent
 
     }
 
+    /// <summary>
+    /// size of units(fixed for simplicity) is 11 as appeared in game, modify if causing problems
+    /// index 0: 1st unit id
+    /// index 1: location.x
+    /// index 2: location.z
+    /// same as above change unit id repeat for all unit(loop)
+    /// </summary>
+    /// <param name="actionBuffers">should be just an array of int/float values</param>
+    
     // Assuming a method to find a unit by its ID exists
     private UnitNew FindUnitById(int id)
     {
@@ -124,9 +133,9 @@ public class DefenderAgent : Agent
             //float posX = unit.position.x + Random.Range(-range, range);
             //float posZ = unit.position.z + Random.Range(-range, range);
 
+
             float posX = actionBuffers.ContinuousActions[actionIndex];
             float posZ = actionBuffers.ContinuousActions[actionIndex+1];
-
             if (unit != null && unit.cunit != null)
             {
                 float movementRange = 100.0f;
@@ -145,12 +154,3 @@ public class DefenderAgent : Agent
         }
 
     }
-
-    private void InCombate(UnitNew myUnit){
-        if(myUnit.isInFight){
-            SetReward(+1f);
-        }else{
-            SetReward(-0.5f);
-        }
-    }
-}

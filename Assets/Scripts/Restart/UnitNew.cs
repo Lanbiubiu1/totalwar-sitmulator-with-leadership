@@ -29,9 +29,11 @@ public class UnitNew : MonoBehaviour
     public HashSet<UnitNew> fightingAgainst = new HashSet<UnitNew>();
 
     public ArmyNew army;
+    //team id for im
+    //public int squadNo;
 
     public CUnitNew cunit;
-
+    public SimplePropagator p;
     public int numCols;
     public float soldierDistLateral;
     public float soldierDistVertical;
@@ -55,6 +57,16 @@ public class UnitNew : MonoBehaviour
     {
         UpdateMoraleState();
     }
+
+    /// <summary>
+    /// set squadNO based on army role, attacker =1, defender = 0
+    /// </summary>
+/*    public void setSquadNo()
+    {
+        if (army.role is ArmyRole.ATTACKER) squadNo = 1;
+        else squadNo = 0;
+
+    }*/
 
     public void UpdateMoraleState()
     {
@@ -267,6 +279,7 @@ public class UnitNew : MonoBehaviour
     public bool letItPass;
     private void Update()
     {
+        //setSquadNo();
         _position = transform.position;
         _direction = transform.forward;
 
