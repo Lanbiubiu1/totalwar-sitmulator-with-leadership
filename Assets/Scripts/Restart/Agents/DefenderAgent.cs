@@ -118,8 +118,9 @@ public class DefenderAgent : Agent
             int actionIndex = i * 2;
             UnitNew unit = army.units[i];
 
-            //float posX = Random.Range(-20.0f, 20.0f);
-            //float posZ = Random.Range(-20.0f, 20.0f);
+            //float range = 20.0f;
+            //float posX = unit.position.x + Random.Range(-range, range);
+            //float posZ = unit.position.z + Random.Range(-range, range);
 
             float posX = actionBuffers.ContinuousActions[actionIndex];
             float posZ = actionBuffers.ContinuousActions[actionIndex+1];
@@ -128,13 +129,16 @@ public class DefenderAgent : Agent
             {
                 Vector3 oldPosition = unit.position;
                 
-                Debug.Log("Target Position X: " + posX + ", Z: " + posZ);
 
-                Vector3 newPosition = new Vector3(posX, 0, posZ);
-                float movementSpeed = 10f;
-                //unit.cunit.MoveAt(newPosition);
-                Vector3 direction = (newPosition - oldPosition).normalized;  // Direction from old position to new position
-                unit.cunit.MoveAt(new List<Vector3>(){ oldPosition + direction * movementSpeed * Time.deltaTime });
+                Vector3 newPosition = new Vector3(posX, unit.position.y, posZ);
+                
+                
+                Vector3 newDirection = (newPosition - unit.position).normalized;
+                
+                Debug.Log($"Unit {i} moving to Target Position X: {newPosition.x}, Z: {newPosition.z}, Direction: {newDirection}");
+
+                // Move the unit to the new position and face the direction it's moving
+                unit.cunit.MoveAt(newPosition, newDirection);
  
 
                 if (unit.position != oldPosition)
