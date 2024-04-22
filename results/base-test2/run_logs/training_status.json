@@ -1,0 +1,29 @@
+{
+    "DefenderBehaviour": {
+        "checkpoints": [
+            {
+                "steps": 576,
+                "file_path": "results\\base-test2\\DefenderBehaviour\\DefenderBehaviour-576.onnx",
+                "reward": null,
+                "creation_time": 1713213588.1610315,
+                "auxillary_file_paths": [
+                    "results\\base-test2\\DefenderBehaviour\\DefenderBehaviour-576.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 576,
+            "file_path": "results\\base-test2\\DefenderBehaviour.onnx",
+            "reward": null,
+            "creation_time": 1713213588.1610315,
+            "auxillary_file_paths": [
+                "results\\base-test2\\DefenderBehaviour\\DefenderBehaviour-576.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0.dev0",
+        "torch_version": "2.2.2+cu121"
+    }
+}
