@@ -113,6 +113,8 @@ public class DefenderAgent : Agent
         //3. set reward for the move(all positive for now maybe negative if hit walls if it's easy to implement)
 
         //repeat for all unit
+        
+        army.DEBUG_MODE = true;
 
         for (int i = 0; i < army.units.Count; i++){
             int actionIndex = i * 2;
@@ -127,11 +129,8 @@ public class DefenderAgent : Agent
 
             if (unit != null && unit.cunit != null)
             {
-                Vector3 oldPosition = unit.position;
-                
-
-                Vector3 newPosition = new Vector3(posX, unit.position.y, posZ);
-                
+                float movementRange = 100.0f;
+                Vector3 newPosition = new Vector3(posX*movementRange, unit.position.y, posZ*movementRange);
                 
                 Vector3 newDirection = (newPosition - unit.position).normalized;
                 
@@ -140,15 +139,6 @@ public class DefenderAgent : Agent
                 // Move the unit to the new position and face the direction it's moving
                 unit.cunit.MoveAt(newPosition, newDirection);
  
-
-                if (unit.position != oldPosition)
-                {
-                    SetReward(+0.2f);  // Positive reward for successful action
-                }
-                else
-                {
-                    SetReward(-0.1f);
-                }
                 InCombate(unit);
             }
 
