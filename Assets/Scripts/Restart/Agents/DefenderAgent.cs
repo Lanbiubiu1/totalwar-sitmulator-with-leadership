@@ -43,9 +43,9 @@ public class DefenderAgent : Agent
 
     // Add observations for ranged units (archers), similar to melee but also includes the unit's range.
     private void AddRangedInformation(VectorSensor sensor, ArcherNew u)
-    {   
+    {
         // Add archer ID as observation.
-        sensor.AddObservation(u.ID); 
+        sensor.AddObservation(u.ID);
         sensor.AddObservation(new Vector2(u.transform.position.x, u.transform.position.z));
         sensor.AddObservation(new Vector2(u.transform.forward.x, u.transform.forward.z));
         //sensor.AddObservation(u.range); // Add archer range as observation.
@@ -93,7 +93,7 @@ public class DefenderAgent : Agent
     /// same as above change unit id repeat for all unit(loop)
     /// </summary>
     /// <param name="actionBuffers">should be just an array of int/float values</param>
-    
+
     // Assuming a method to find a unit by its ID exists
     private UnitNew FindUnitById(int id)
     {
@@ -122,10 +122,11 @@ public class DefenderAgent : Agent
         //3. set reward for the move(all positive for now maybe negative if hit walls if it's easy to implement)
 
         //repeat for all unit
-        
+
         army.DEBUG_MODE = true;
 
-        for (int i = 0; i < army.units.Count; i++){
+        for (int i = 0; i < army.units.Count; i++)
+        {
             int actionIndex = i * 2;
             UnitNew unit = army.units[i];
 
@@ -135,22 +136,35 @@ public class DefenderAgent : Agent
 
 
             float posX = actionBuffers.ContinuousActions[actionIndex];
-            float posZ = actionBuffers.ContinuousActions[actionIndex+1];
+            float posZ = actionBuffers.ContinuousActions[actionIndex + 1];
             if (unit != null && unit.cunit != null)
             {
                 float movementRange = 100.0f;
-                Vector3 newPosition = new Vector3(posX*movementRange, unit.position.y, posZ*movementRange);
-                
+                Vector3 newPosition = new Vector3(posX * movementRange, unit.position.y, posZ * movementRange);
+
                 Vector3 newDirection = (newPosition - unit.position).normalized;
-                
+
                 Debug.Log($"Unit {i} moving to Target Position X: {newPosition.x}, Z: {newPosition.z}, Direction: {newDirection}");
 
                 // Move the unit to the new position and face the direction it's moving
                 unit.cunit.MoveAt(newPosition, newDirection);
- 
+
                 InCombate(unit);
             }
 
         }
 
     }
+
+    private void InCombate(UnitNew myUnit)
+    {
+        if (myUnit.isInFight)
+        {
+            SetReward(+1f);
+        }
+        else
+        {
+            SetReward(-0.5f);
+        }
+    }
+}
