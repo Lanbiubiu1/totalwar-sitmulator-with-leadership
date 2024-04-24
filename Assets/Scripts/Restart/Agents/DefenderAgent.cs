@@ -113,38 +113,43 @@ public class DefenderAgent : Agent
         //3. set reward for the move(all positive for now maybe negative if hit walls if it's easy to implement)
 
         //repeat for all unit
+        
+        army.DEBUG_MODE = true;
 
         for (int i = 0; i < army.units.Count; i++){
             int actionIndex = i * 2;
             UnitNew unit = army.units[i];
 
             Vector3 newPosition;
+            float movementRange = 100.0f;
             
             if (unit != null && unit.cunit != null)
             {
+
                 //Debug.Log(unit.morale);
                 if (unit.currentMoraleState == UnitNew.MoraleState.Wavering){
                     float range = 20.0f;
                     float posX = unit.position.x + Random.Range(-range, range);
                     float posZ = unit.position.z + Random.Range(-range, range);
-                    newPosition = new Vector3(posX, unit.position.y, posZ);
+                    newPosition = new Vector3(posX*movementRange, unit.position.y, posZ*movementRange);
 
                 }
                 else{
                     float posX = actionBuffers.ContinuousActions[actionIndex];
                     float posZ = actionBuffers.ContinuousActions[actionIndex+1];
-                    newPosition = new Vector3(posX, unit.position.y, posZ);
+                    newPosition = new Vector3(posX*movementRange, unit.position.y, posZ*movementRange);
                 }
 
                  
+
+                
+        
                 Vector3 newDirection = (newPosition - unit.position).normalized;
                     
                 //Debug.Log($"Unit {i} moving to Target Position X: {newPosition.x}, Z: {newPosition.z}, Direction: {newDirection}");
 
                     // Move the unit to the new position and face the direction it's moving
                 unit.cunit.MoveAt(newPosition, newDirection);
-
-                    
 
                 if (unit.position != null)
                 {
@@ -154,6 +159,7 @@ public class DefenderAgent : Agent
                 {
                     SetReward(-0.1f);
                 }
+
                 InCombate(unit);
                 
             }
