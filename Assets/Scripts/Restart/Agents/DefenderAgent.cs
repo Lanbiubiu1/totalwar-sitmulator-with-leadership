@@ -118,30 +118,35 @@ public class DefenderAgent : Agent
             int actionIndex = i * 2;
             UnitNew unit = army.units[i];
 
-            //float range = 20.0f;
-            //float posX = unit.position.x + Random.Range(-range, range);
-            //float posZ = unit.position.z + Random.Range(-range, range);
-
-            float posX = actionBuffers.ContinuousActions[actionIndex];
-            float posZ = actionBuffers.ContinuousActions[actionIndex+1];
-
+            Vector3 newPosition;
+            
             if (unit != null && unit.cunit != null)
             {
-                Vector3 oldPosition = unit.position;
-                
+                //Debug.Log(unit.morale);
+                if (unit.currentMoraleState == UnitNew.MoraleState.Wavering){
+                    float range = 20.0f;
+                    float posX = unit.position.x + Random.Range(-range, range);
+                    float posZ = unit.position.z + Random.Range(-range, range);
+                    newPosition = new Vector3(posX, unit.position.y, posZ);
 
-                Vector3 newPosition = new Vector3(posX, unit.position.y, posZ);
-                
-                
+                }
+                else{
+                    float posX = actionBuffers.ContinuousActions[actionIndex];
+                    float posZ = actionBuffers.ContinuousActions[actionIndex+1];
+                    newPosition = new Vector3(posX, unit.position.y, posZ);
+                }
+
+                 
                 Vector3 newDirection = (newPosition - unit.position).normalized;
-                
-                Debug.Log($"Unit {i} moving to Target Position X: {newPosition.x}, Z: {newPosition.z}, Direction: {newDirection}");
+                    
+                //Debug.Log($"Unit {i} moving to Target Position X: {newPosition.x}, Z: {newPosition.z}, Direction: {newDirection}");
 
-                // Move the unit to the new position and face the direction it's moving
+                    // Move the unit to the new position and face the direction it's moving
                 unit.cunit.MoveAt(newPosition, newDirection);
- 
 
-                if (unit.position != oldPosition)
+                    
+
+                if (unit.position != null)
                 {
                     SetReward(+0.2f);  // Positive reward for successful action
                 }
@@ -150,6 +155,7 @@ public class DefenderAgent : Agent
                     SetReward(-0.1f);
                 }
                 InCombate(unit);
+                
             }
 
         }

@@ -9,9 +9,11 @@ public class CombactManagerNew : MonoBehaviour
 {
 
     public ArmyNew attacker, defender;
+    private int initialDefenderCount;
 
     public List<UnitNew> unitsAttacker, unitsDefender;
     public static List<UnitNew> allUnits;
+
 
 
     void Start()
@@ -23,13 +25,29 @@ public class CombactManagerNew : MonoBehaviour
         unitsDefender = defender.units;
         allUnits = unitsAttacker.Concat(unitsDefender).ToList();
 
+        initialDefenderCount = unitsDefender.Sum(unit => unit.soldiers.Count);
+
         StartCoroutine(UpdateCombactManager());
     }
 
+    private bool CheckGameEndCondition()
+    {
+        int currentDefenderCount = unitsDefender.Sum(unit => unit.soldiers.Count);
+        return currentDefenderCount <= initialDefenderCount * 0.2;
+    }
+
+    private void EndGame()
+    {
+        
+        Debug.Log("Game Over: Defender's forces are reduced below 20%");
+        Application.Quit();
+        
+    }
 
     private HashSet<SoldierNew> prova = new HashSet<SoldierNew>();
     private HashSet<SoldierNew> deads = new HashSet<SoldierNew>();
     private HashSet<UnitNew> deadUnits = new HashSet<UnitNew>();
+
     private void CheckForDeads()
     {
 
@@ -53,13 +71,13 @@ public class CombactManagerNew : MonoBehaviour
 
             deads.Clear();
             foreach(var s in u.soldiers)
-                if (s.health < 0)
-                    deads.Add(s);
+                if (s.health < 0){
+                    deads.Add(s);}
+                    
             
-            //pass the varible to the unit script to update the morale status
-            float lossPercentage = (deads.Count / (float)u.initialSoldiersCount) * 100f;
-            u.DecreaseMoraleOnLoss(lossPercentage);
-
+            
+            
+            
             foreach(var d in deads)
             {
                 u.soldiers.Remove(d);
@@ -167,6 +185,13 @@ public class CombactManagerNew : MonoBehaviour
 
             CheckForDeads();
             UpdateCUnit();
+
+            if (CheckGameEndCondition())
+            {
+                EndGame();
+                break;
+            }
+            
         }
     }
 }

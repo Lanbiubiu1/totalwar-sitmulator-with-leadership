@@ -51,6 +51,13 @@ public class UnitNew : MonoBehaviour
     public enum MoraleState { Impetuous, Eager, Confident, Steady, Wavering, Routing }
     public MoraleState currentMoraleState;
 
+    private int waveringFrameCounter = 0;
+    private const int framesBeforeRecovery = 10;
+
+    private bool decreasedFor90 = false;
+    private bool decreasedFor80 = false;
+    private bool decreasedFor20 = false;
+
     private void InitializeMorale()
     {
         UpdateMoraleState();
@@ -74,13 +81,43 @@ public class UnitNew : MonoBehaviour
     }
 
     //need to find a way to pass in the loss percentage
-    public void DecreaseMoraleOnLoss(float lossPercentage)
+    public void DecreaseMoraleOnLoss()
     {
-        if (lossPercentage >= 90) morale -= 60;
-        else if (lossPercentage >= 80) morale -= 55;
-        else if (lossPercentage >= 20) morale -= 5;
+        float remainPercentage = (float)soldiers.Count / initialSoldiersCount * 100f;
+
+        if (remainPercentage <= 90 && !decreasedFor90)
+        {
+            morale -= 5;
+            decreasedFor90 = true;
+        }
+        else if (remainPercentage <= 80 && !decreasedFor80)
+        {
+            morale -= 55;
+            decreasedFor80 = true;
+        }
+        else if (remainPercentage <= 20 && !decreasedFor20)
+        {
+            morale -= 60;
+            decreasedFor20 = true;
+        }
 
         UpdateMoraleState();
+    }
+
+    public void ResetMoraleDecreaseFlags()
+    {
+        if ((float)soldiers.Count / initialSoldiersCount * 100f > 90)
+        {
+            decreasedFor90 = false;
+        }
+        if ((float)soldiers.Count / initialSoldiersCount * 100f > 70)
+        {
+            decreasedFor80 = false;
+        }
+        if ((float)soldiers.Count / initialSoldiersCount * 100f > 20)
+        {
+            decreasedFor20 = false;
+        }
     }
 
     //need to call when specific event is triggered
@@ -280,8 +317,28 @@ public class UnitNew : MonoBehaviour
             StartCoroutine(JustLetItPass());
         }
 
-        RecoverMorale();
+
+        DecreaseMoraleOnLoss();
+        Debug.Log(morale);
+        
+        if (currentMoraleState == MoraleState.Wavering)
+        {
+            waveringFrameCounter++; // Increment the wavering counter
+            if (waveringFrameCounter >= 1000) // Check if it has been wavering for 10 frames
+            {
+                RecoverMorale();
+                waveringFrameCounter = 0; // Reset counter after recovery starts
+            }
+        }
+        else
+        {
+            waveringFrameCounter = 0; // Reset counter if not wavering
+        }
+        
+        
+            
     }
+    
 
     
     WaitForEndOfFrame wfeof = new WaitForEndOfFrame();
