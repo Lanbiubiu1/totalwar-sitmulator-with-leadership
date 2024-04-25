@@ -48,7 +48,7 @@ public class UnitNew : MonoBehaviour
     private float moraleUpdateTime = 5f; // Time in seconds to update morale
     private float lastMoraleUpdateTime = 0;
 
-    public enum MoraleState { Impetuous, Eager, Confident, Steady, Wavering, Routing }
+    public enum MoraleState { Impetuous = 1, Eager = 2, Confident = 3, Steady, Wavering = 4, Routing = 5 }
     public MoraleState currentMoraleState;
 
     private int waveringFrameCounter = 0;
@@ -70,7 +70,10 @@ public class UnitNew : MonoBehaviour
         else if (morale >= 65) currentMoraleState = MoraleState.Confident;
         else if (morale >= 30) currentMoraleState = MoraleState.Steady;
         else if (morale >= 0) currentMoraleState = MoraleState.Wavering;
-        else currentMoraleState = MoraleState.Routing;
+        else {
+            currentMoraleState = MoraleState.Routing;
+            state = UnitState.ESCAPING;
+        }
     }
 
     private void RecoverMorale()

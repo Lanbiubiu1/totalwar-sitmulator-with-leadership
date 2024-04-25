@@ -125,13 +125,23 @@ public class DefenderAgent : Agent
             
             if (unit != null && unit.cunit != null)
             {
+                
+                // Vector3 newPosition = new Vector3(posX, 0, posZ);
+                // float movementSpeed = 100f;
+                // // unit.cunit.MoveAt(newPosition);
+                // Vector3 direction = (newPosition - oldPosition).normalized;  // Direction from old position to new position
+                // Vector3 input = oldPosition + direction * movementSpeed * Time.deltaTime;
 
-                //Debug.Log(unit.morale);
+                // Debug.Log("Input Vector Position X: " + input.x + ", Z: " + input.z);
+                // unit.cunit.MoveAt(input);
+
+                Debug.Log(((int)unit.morale).ToString());
                 if (unit.currentMoraleState == UnitNew.MoraleState.Wavering){
                     float range = 20.0f;
-                    float posX = unit.position.x + Random.Range(-range, range);
-                    float posZ = unit.position.z + Random.Range(-range, range);
-                    newPosition = new Vector3(posX*movementRange, unit.position.y, posZ*movementRange);
+
+                    // float posX = unit.position.x + Random.Range(-range, range);
+                    // float posZ = unit.position.z + Random.Range(-range, range);
+                    newPosition = new Vector3(unit.position.x, unit.position.y, -100);
 
                 }
                 else{
