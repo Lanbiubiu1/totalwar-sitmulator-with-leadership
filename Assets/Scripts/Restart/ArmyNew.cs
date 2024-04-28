@@ -1,13 +1,15 @@
-﻿using DbscanImplementation;
+using DbscanImplementation;
 using NetTopologySuite.Algorithm;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.Operation.Distance;
 using NetTopologySuite.Operation.Union;
+using NoOpArmy.WiseFeline.InfluenceMaps;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using static MeleeStats;
@@ -65,7 +67,7 @@ public class ArmyNew : MonoBehaviour
         get { return "unit" + ((int)role + 1); }
     }
 
-
+    
 
     private void OnDrawGizmos()
     {
@@ -168,8 +170,7 @@ public class ArmyNew : MonoBehaviour
 
     }
 
-
-
+     
 
 
 
@@ -212,6 +213,27 @@ public class ArmyNew : MonoBehaviour
         }
     }
 
+    public void AttachScript(List<UnitNew> units) {
+
+        foreach (UnitNew unit in units){
+            unit.gameObject.AddComponent<InfluencerAgent>(); 
+            unit.gameObject.GetComponent<InfluencerAgent>().mapComponent =
+                GameObject.Find("Map").GetComponent<InfluenceMapComponent>(); 
+            
+            if (role == ArmyRole.DEFENDER){
+                InfluenceMapTemplate myMapTemplate = AssetDatabase.LoadAssetAtPath<InfluenceMapTemplate>("Assets/EnemyTemplate.asset");
+
+                if(myMapTemplate != null) {
+                    unit.gameObject.GetComponent<InfluencerAgent>().myMapTemplate = myMapTemplate;
+                } else {
+                    Debug.LogError("EnemyTemplate not found in Assets.");
+                }
+
+            }
+            
+        }
+            
+    }
 
 
     public void InstantiateArmy(bool debug = false)
@@ -288,6 +310,10 @@ public class ArmyNew : MonoBehaviour
             else
                 AddArcherAtPos(curPos, u, i);
         }
+
+        
+        AttachScript(units);
+        
 
 
     }
