@@ -258,6 +258,8 @@ public class UnitNew : MonoBehaviour
 
     public void AttachScript() {
         this.gameObject.AddComponent<InfluencerAgent>(); // Replace 'MyScript' with the actual class type you want to attach
+        this.gameObject.GetComponent<InfluencerAgent>().mapComponent =
+            GameObject.Find("Map").GetComponent<InfluenceMapComponent>();
     }
 
 
