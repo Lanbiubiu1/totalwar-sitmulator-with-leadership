@@ -8,6 +8,9 @@ using UnityEngine;
 using static MeleeStats;
 using static Utils;
 
+
+using NoOpArmy.WiseFeline.InfluenceMaps;
+
 public class UnitNew : MonoBehaviour
 {
 
@@ -253,7 +256,9 @@ public class UnitNew : MonoBehaviour
         meleeCollider.size = new Vector3(2 * latExp, meleeCollider.size.y, 2 * frontExp);
     }
 
-
+    public void AttachScript() {
+        this.gameObject.AddComponent<InfluencerAgent>(); // Replace 'MyScript' with the actual class type you want to attach
+    }
 
 
     #region INSTATIONATION STUFF    
@@ -300,6 +305,7 @@ public class UnitNew : MonoBehaviour
 
         //morale needed
         initialSoldiersCount = soldiers.Count;
+        AttachScript();
     }
     #endregion
 
