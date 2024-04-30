@@ -257,10 +257,10 @@ public static class Utils
 {
     // public enum UnitStatus { IDLE, CHARGING }
     public enum Cardinal { NW, N, NE, E, SE, S, SW, W }
-    public enum UnitState { IDLE, MOVING, FIGHTING, ESCAPING }
+    public enum UnitState { IDLE  = 0, MOVING = 1, FIGHTING = 2, ESCAPING = 3}
     public enum UnitCombactState { DEFENDING, ATTACKING  }
     public enum UnitMovementState { WALKING, RUNNING }
-    public enum ArmyRole { ATTACKER, DEFENDER }
+    public enum ArmyRole { ATTACKER = 0, DEFENDER = 1 }
 
 
     public static Vector3 GetRandomVectorXZ(float noise) { return new Vector3(Random.Range(-noise, noise), 0, Random.Range(-noise, noise)); }

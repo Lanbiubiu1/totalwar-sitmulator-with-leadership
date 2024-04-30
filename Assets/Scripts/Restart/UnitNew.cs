@@ -62,6 +62,8 @@ public class UnitNew : MonoBehaviour
     private bool decreasedFor80 = false;
     private bool decreasedFor20 = false;
 
+    public float lost_precentage = 0.0f;
+
     private void InitializeMorale()
     {
         UpdateMoraleState();
@@ -69,7 +71,7 @@ public class UnitNew : MonoBehaviour
 
     public void UpdateMoraleState()
     {
-        if (morale > 110) currentMoraleState = MoraleState.Impetuous;
+        if (morale > 100) currentMoraleState = MoraleState.Impetuous;
         else if (morale >= 90) currentMoraleState = MoraleState.Eager;
         else if (morale >= 65) currentMoraleState = MoraleState.Confident;
         else if (morale >= 30) currentMoraleState = MoraleState.Steady;
@@ -327,7 +329,7 @@ public class UnitNew : MonoBehaviour
 
 
         DecreaseMoraleOnLoss();
-        Debug.Log(morale);
+        
         
         if (currentMoraleState == MoraleState.Wavering)
         {
@@ -343,7 +345,7 @@ public class UnitNew : MonoBehaviour
             waveringFrameCounter = 0; // Reset counter if not wavering
         }
         
-        
+        lost_precentage = numOfSoldiers / initialSoldiersCount;
             
     }
     

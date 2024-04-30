@@ -9,12 +9,17 @@ using Unity.MLAgents.Sensors; //https://docs.unity3d.com/Packages/com.unity.ml-a
 using Unity.MLAgents.Actuators; //https://docs.unity3d.com/Packages/com.unity.ml-agents@2.0/api/Unity.MLAgents.Actuators.html
 using Unity.MLAgents.Policies; //https://docs.unity3d.com/Packages/com.unity.ml-agents@2.0/api/Unity.MLAgents.Policies.html
 using NoOpArmy.WiseFeline.InfluenceMaps;
+using Unity.VisualScripting;
+using NetTopologySuite.Algorithm;
+
 
 
 public class DefenderAgent : Agent
 {
     // Public variable to reference the army, which presumably includes various units like infantry, cavalry, and archers.
     public ArmyNew army;
+
+    
 
     // add all the ims installed
     private InfluenceMapComponent im;// use this to retrive values and locations, see InfluenceMapComponent script for reference
@@ -25,9 +30,15 @@ public class DefenderAgent : Agent
         im = GameObject.Find("Map").GetComponent<InfluenceMapComponent>();
 
     }
+    
+        
+
+    
+
     // Update is called once per frame.
     private void Update()
     {
+        
         // If the game is not currently playing, adjust the Brain's VectorObservationSize based on the army's unit counts.
         // This dynamically changes the input size for the neural network based on the composition of the army.
         if (!Application.isPlaying)
@@ -48,19 +59,50 @@ public class DefenderAgent : Agent
     private void AddMeleeInformation(VectorSensor sensor, UnitNew u)
     {
         // Add unit ID as observation.
-        sensor.AddObservation(u.ID);
+        sensor.AddObservation(u.ID);  
         sensor.AddObservation(new Vector2(u.transform.position.x, u.transform.position.z));
         sensor.AddObservation(new Vector2(u.transform.forward.x, u.transform.forward.z));
+
+        sensor.AddObservation(u.lost_precentage); //loss percentage
+        sensor.AddObservation((float)u.state);
+        sensor.AddObservation(u.morale/100.0f);
     }
 
     // Add observations for ranged units (archers), similar to melee but also includes the unit's range.
     private void AddRangedInformation(VectorSensor sensor, ArcherNew u)
     {   
         // Add archer ID as observation.
-        sensor.AddObservation(u.ID); 
+        sensor.AddObservation(u.ID);
+        
         sensor.AddObservation(new Vector2(u.transform.position.x, u.transform.position.z));
         sensor.AddObservation(new Vector2(u.transform.forward.x, u.transform.forward.z));
         //sensor.AddObservation(u.range); // Add archer range as observation.
+
+        sensor.AddObservation(u.lost_precentage); //loss percentage
+        sensor.AddObservation((float)u.state);
+        sensor.AddObservation(u.morale/100.0f);
+    }
+
+    private void AddEnemyMeleeInformation(VectorSensor sensor, UnitNew u)
+    { 
+        sensor.AddObservation(u.ID);
+        sensor.AddObservation((float)u.army.role);// 0 is the attacker and 1 is the defender
+        sensor.AddObservation(new Vector2(u.transform.position.x, u.transform.position.z));
+        sensor.AddObservation(new Vector2(u.transform.forward.x, u.transform.forward.z));
+        sensor.AddObservation(u.morale/100.0f);
+        sensor.AddObservation((float)u.state);
+
+    }
+
+    private void AddEnemyRangedInformation(VectorSensor sensor, ArcherNew u)
+    { 
+        sensor.AddObservation(u.ID);
+        sensor.AddObservation((float)u.army.role);// 0 is the attacker and 1 is the defender
+        sensor.AddObservation(new Vector2(u.transform.position.x, u.transform.position.z));
+        sensor.AddObservation(new Vector2(u.transform.forward.x, u.transform.forward.z));
+        sensor.AddObservation(u.morale/100.0f);
+        sensor.AddObservation((float)u.state);
+
     }
 
     // Collect observations from the environment to be used by the neural network for making decisions.
@@ -70,20 +112,44 @@ public class DefenderAgent : Agent
         // Add counts of each unit type to the observation vector.
         sensor.AddObservation(army.infantryUnits.Count);// Add infantry count.
         foreach (var i in army.infantryUnits)
-            // Add information for each infantry unit.
-            AddMeleeInformation(sensor, i);
+            
+            AddMeleeInformation(sensor, i);// 8 observations per unit
+            
+            
 
 
         sensor.AddObservation(army.archerUnits.Count);// Add archer count
         foreach (var a in army.archerUnits)
-            // Add information for each archer.
-            AddRangedInformation(sensor, a);
+            
+            AddRangedInformation(sensor, a);// 8 observations per unit
 
 
         sensor.AddObservation(army.cavalryUnits.Count);// Add cavalry count.
         foreach (var c in army.cavalryUnits)
-            // Add information for each cavalry unit.
-            AddMeleeInformation(sensor, c);
+            
+            AddMeleeInformation(sensor, c);// 8 observations per unit
+
+
+
+        // Add counts of each enemy unit type to the observation vector.
+
+        // 1 observation
+        sensor.AddObservation(army.enemy.infantryUnits.Count);// Add enemy infantry count.
+        foreach (var e_i in army.enemy.infantryUnits)
+            AddEnemyMeleeInformation(sensor, e_i);// 8 observations per unit
+
+        // 1 observation
+        sensor.AddObservation(army.enemy.archerUnits.Count);// Add enemy archer count
+        foreach (var a in army.enemy.archerUnits)
+           
+            AddEnemyRangedInformation(sensor, a);// 8 observations per unit
+
+        // 1 observation
+        sensor.AddObservation(army.enemy.cavalryUnits.Count);// Add enemy archer count
+        foreach (var c in army.enemy.cavalryUnits)
+            
+            AddEnemyMeleeInformation(sensor, c); // 8 observations per unit
+
 
         // IMPORTANT: Count the number of values for each observation in comment
         // For example, a vector3 contains 3 observations
@@ -97,11 +163,7 @@ public class DefenderAgent : Agent
         // add all ims installed(start with the one we have for the defender team)
 
 
-        // add all unit status(health, state, morale)
-        // perhaps do this in addrangedinformation & addmeleeinformation above
-
-
-        // add all enemy unit information(status, position, state) 
+       
 
     }
 
@@ -206,15 +268,6 @@ public class DefenderAgent : Agent
             
             if (unit != null && unit.cunit != null)
             {
-                
-                // Vector3 newPosition = new Vector3(posX, 0, posZ);
-                // float movementSpeed = 100f;
-                // // unit.cunit.MoveAt(newPosition);
-                // Vector3 direction = (newPosition - oldPosition).normalized;  // Direction from old position to new position
-                // Vector3 input = oldPosition + direction * movementSpeed * Time.deltaTime;
-
-                // Debug.Log("Input Vector Position X: " + input.x + ", Z: " + input.z);
-                // unit.cunit.MoveAt(input);
 
                 Debug.Log(((int)unit.morale).ToString());
                 if (unit.currentMoraleState == UnitNew.MoraleState.Wavering){
