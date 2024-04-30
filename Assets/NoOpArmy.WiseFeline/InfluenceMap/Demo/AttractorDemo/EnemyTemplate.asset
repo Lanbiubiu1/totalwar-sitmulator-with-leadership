@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 541e8f129a3ff4f4d9ebc25ebf4cdb72, type: 3}
   m_Name: EnemyTemplate
   m_EditorClassIdentifier: 
-  Radius: 40
+  Radius: 60
   Curve:
     serializedVersion: 2
     m_Curve:
@@ -26,8 +26,26 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 1
-      value: 0
+      time: 0.33566093
+      value: 0.99411225
+      inSlope: -0.026057614
+      outSlope: -0.026057614
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0.6200487
+      outWeight: 0.24524866
+    - serializedVersion: 3
+      time: 0.895795
+      value: 0.9151378
+      inSlope: -0.2737163
+      outSlope: -0.2737163
+      tangentMode: 0
+      weightedMode: 3
+      inWeight: 0.39426816
+      outWeight: 0.44895464
+    - serializedVersion: 3
+      time: 0.9998096
+      value: 0.7263358
       inSlope: 0
       outSlope: 0
       tangentMode: 0

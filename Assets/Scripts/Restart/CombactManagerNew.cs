@@ -4,6 +4,7 @@ using System.Linq;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CombactManagerNew : MonoBehaviour
 {
@@ -40,8 +41,9 @@ public class CombactManagerNew : MonoBehaviour
     {
         
         Debug.Log("Game Over: Defender's forces are reduced below 20%");
-        Application.Quit();
-        
+        //Application.Quit();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
     }
 
     private HashSet<SoldierNew> prova = new HashSet<SoldierNew>();

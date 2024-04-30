@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //using Unity Window > Package Manager to install the ML Agent package
+using UnityEngine.SceneManagement;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors; //https://docs.unity3d.com/Packages/com.unity.ml-agents%401.0/api/Unity.MLAgents.Sensors.html
 using Unity.MLAgents.Actuators; //https://docs.unity3d.com/Packages/com.unity.ml-agents@2.0/api/Unity.MLAgents.Actuators.html
 using Unity.MLAgents.Policies; //https://docs.unity3d.com/Packages/com.unity.ml-agents@2.0/api/Unity.MLAgents.Policies.html
+using NoOpArmy.WiseFeline.InfluenceMaps;
 
 
 public class DefenderAgent : Agent
@@ -14,6 +16,15 @@ public class DefenderAgent : Agent
     // Public variable to reference the army, which presumably includes various units like infantry, cavalry, and archers.
     public ArmyNew army;
 
+    // add all the ims installed
+    private InfluenceMapComponent im;// use this to retrive values and locations, see InfluenceMapComponent script for reference
+
+    public override void Initialize()
+    {
+        //initialize the im
+        im = GameObject.Find("Map").GetComponent<InfluenceMapComponent>();
+
+    }
     // Update is called once per frame.
     private void Update()
     {
@@ -29,6 +40,7 @@ public class DefenderAgent : Agent
     // Override the OnEpisodeBegin method from the Agent class. Used for resetting the environment at the start of training episodes.
     public override void OnEpisodeBegin()
     {
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
 
@@ -73,6 +85,23 @@ public class DefenderAgent : Agent
             // Add information for each cavalry unit.
             AddMeleeInformation(sensor, c);
 
+        // IMPORTANT: Count the number of values for each observation in comment
+        // For example, a vector3 contains 3 observations
+        
+
+        // add destination with highest value, reference influencemap searchhighestvaluecloesttocenter
+        // this need to be per unit
+        // add direction vector & distance
+        
+
+        // add all ims installed(start with the one we have for the defender team)
+
+
+        // add all unit status(health, state, morale)
+        // perhaps do this in addrangedinformation & addmeleeinformation above
+
+
+        // add all enemy unit information(status, position, state) 
 
     }
 
@@ -106,14 +135,66 @@ public class DefenderAgent : Agent
     // Process actions received from the neural network. Here, a reward of 1.0f is given for any received action.
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        //1. set selectedunit using unit id
+        // NEW STRUCTURE:
+        // action reference page:https://docs.unity3d.com/Packages/com.unity.ml-agents@3.0/api/Unity.MLAgents.Actuators.ActionBuffers.html
 
-        //2. use selectedunit.moveat(provided function in CUnitNew.cs) to move unit to new location
+        // 3 discrete action(assuming 3 units per army) for unit selection:
+        //      0 -> unitid =0 and so on
 
-        //3. set reward for the move(all positive for now maybe negative if hit walls if it's easy to implement)
+        // 2 continousaction(clamped between -1 and 1): rotation & distance
+        //      index0: rotation: -1 -> 0 degree
+        //                        +1 -> 360 degree
+        //      index1: distance: 1 -> max distance based on board size(1 * board width/height) i think we have a square board so this should work
+        //                        0 -> 0
+        //                penalize(negative reward) values < 0
 
-        //repeat for all unit
-        
+        // psudocode for carrying out actions:
+
+        // if (discreteaction == one of the unit id
+        //      selectedunit = unit.findByUnitid
+        //      if selectedunit.isMoving, do nothing //i.e wait for last movement action to complete
+        //      if !selectedunit.isMoving & !selectedunit.inFight //if idle and not in fight, move and evaluate
+
+        //          dest = calculate the destination based on selectunit.postion and continousaction[0]and [1] // add penalty(-1reward) for negative value fron contunousaction[1] here
+        //          selectedunit.moveat(dest)
+        //          if dest.imvalue >= threshhold(determined using maxvalue in the im, set to maxvalue/2)
+        //              addreward(1f)
+        //          else if dest.imvalue = maxvalue, addreward(3f)
+        //      if !selectedunit.isMoving & selectedunit.inFight // combate evaluation, helper functions idea below
+        //          combatEval(selectedUnit)
+
+
+        // need a collision evaluation to penalize hitting boundries, the below code is from hummingbird example
+        /// <summary>
+        /// Called when the agent collides with something solid
+        /// </summary>
+        /// <param name="collision">The collision info</param>
+        /*private void OnCollisionEnter(Collision collision)
+        {
+            if (trainingMode && collision.collider.CompareTag("boundary"))
+            {
+                // Collided with the area boundary, give a negative reward
+                AddReward(-.5f);
+            }
+        }*/
+
+
+
+        //Combat evaluation helper
+
+        // private void combatEval(UnitNew myUnit){
+        //      if myunit.health < maxhealth/2 : addreward(-3f)
+        //      else addreward(1f)
+
+        //      targettype = myunit.target.type
+
+        ////    ignoring cases like melee vs melee for now
+        //      if myunit is melee & targettype is range: addreward(-2f)for now
+        //      else if myunit is calvary & targettype is range: addreward(2f)
+        //      else if myunit is range & targettype is range: addreward(-0.5f)
+        //}
+
+
         army.DEBUG_MODE = true;
 
         for (int i = 0; i < army.units.Count; i++){
@@ -178,11 +259,11 @@ public class DefenderAgent : Agent
 
     }
 
-    private void InCombate(UnitNew myUnit){
-        if(myUnit.isInFight){
-            SetReward(+1f);
-        }else{
-            SetReward(-0.5f);
+    private void InCombate(UnitNew myUnit)
+    {
+        if (myUnit.isInFight)
+        {
+            SetReward(-10f);
         }
     }
 }
