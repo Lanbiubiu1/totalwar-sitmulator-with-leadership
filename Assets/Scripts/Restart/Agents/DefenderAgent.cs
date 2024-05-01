@@ -19,6 +19,18 @@ public class DefenderAgent : Agent
     // Public variable to reference the army, which presumably includes various units like infantry, cavalry, and archers.
     public ArmyNew army;
 
+    public GameObject wall_left;
+    public GameObject wall_right;
+    public GameObject wall_behind;
+    public GameObject wall_forward;
+
+    float minX;
+    float maxX;
+    float minZ;
+    float maxZ;
+
+
+
     
 
     // add all the ims installed
@@ -26,6 +38,12 @@ public class DefenderAgent : Agent
 
     public override void Initialize()
     {
+        minX = wall_left.transform.position.x + 75f;  
+        maxX = wall_right.transform.position.x - 75f;
+
+        minZ = wall_behind.transform.position.z + 75f;
+        maxZ = wall_forward.transform.position.z - 75f;
+
         var array = im.Map.GetCellsArray();
         Debug.Log((array.GetLength(0)).ToString());
         Debug.Log((array.GetLength(1)).ToString());
@@ -290,8 +308,7 @@ public class DefenderAgent : Agent
         float rotationAction = continuousactions[0]; // Rotation action from -1 to 1
         float distanceAction = continuousactions[1]; // Distance action from -1 to 1
         if (distanceAction < 0f) AddReward(-1f);
-        float width = 150f;
-        float height = 150f;
+        
         
             
         if (unit != null && unit.cunit != null)
@@ -299,24 +316,29 @@ public class DefenderAgent : Agent
 
             //Debug.Log(((int)unit.morale).ToString());
             if (unit.currentMoraleState == UnitNew.MoraleState.Wavering){
-                float range = 20.0f;
+                
+                float randomDistance = UnityEngine.Random.Range(10.0f, 50.0f);
 
-                newPosition = new Vector3(unit.position.x, unit.position.y, -75);
+                Vector3 backwardDirection = -unit.transform.forward;
+                newPosition = unit.position + backwardDirection.normalized * randomDistance;
+                
+                
                 Debug.Log("escaping");
             }
             else{
                 float rotationDegrees = MapRange(rotationAction, -1f, 1f, 0f, 360f);
                 float distance = MapRange(distanceAction, 0f, 1f, 0f, 150f);
                 Quaternion rotation = Quaternion.Euler(0, rotationDegrees, 0);
-                Vector3 direction = rotation * Vector3.forward;
+                Vector3 direction = rotation * unit.transform.forward.normalized;
 
                 newPosition = unit.position + direction * distance;
-                newPosition.y = unit.position.y;
                 
             }
+            newPosition.y = unit.position.y;
+            newPosition.x = Mathf.Clamp(newPosition.x, minX, maxX);
+            newPosition.z = Mathf.Clamp(newPosition.z, minZ, maxZ);
 
-            newPosition.x = Mathf.Clamp(newPosition.x, -70f, 70f);
-            newPosition.z = Mathf.Clamp(newPosition.z, -70f, 70f);
+           
 
             //var destMapPos = im.WorldToMapPosition(newPosition);
             //float influence = im.GetCellValue(newPosition);
@@ -327,10 +349,13 @@ public class DefenderAgent : Agent
             /*var destMapPos = im.WorldToMapPosition(newPosition);
             float influence = im.GetCellValue(newPosition);
             Debug.Log((influence).ToString());*/
-            Vector3 newDirection = (newPosition - unit.position).normalized;
-                    
-                
+            Vector3 newDirection = (newPosition - unit.position).normalized;   
             unit.cunit.MoveAt(newPosition, newDirection);
+
+            float influence = im.GetCellValue(newPosition);
+            Debug.Log(influence.ToString());
+
+
             if (newPosition == getIdealDest(unit))
             {
                 AddReward(1f);
