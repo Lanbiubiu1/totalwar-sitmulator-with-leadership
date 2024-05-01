@@ -382,13 +382,7 @@ public class DefenderAgent : Agent
         return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
     }
 
-    private void InCombate(UnitNew myUnit)
-    {
-        if (myUnit.isInFight)
-        {
-            SetReward(-10f);
-        }
-    }
+    
     private Vector3 getIdealDest(UnitNew u)
     {
         var mapPos = im.WorldToMapPosition(u.position);
