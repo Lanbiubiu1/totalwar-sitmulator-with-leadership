@@ -313,6 +313,16 @@ public class ArmyNew : MonoBehaviour
 
         
         AttachScript(units);
+        foreach(var archer in archerUnits){
+            archer.type = UnitNew.Type.Archer;
+        }
+        foreach(var inf in infantryUnits){
+            inf.type = UnitNew.Type.Infantry;
+        }
+        foreach(var cavalry in cavalryUnits){
+            cavalry.type = UnitNew.Type.Cavalry;
+        }
+
         
 
 
