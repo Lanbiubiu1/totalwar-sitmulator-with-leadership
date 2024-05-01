@@ -85,6 +85,7 @@ public class UnitNew : MonoBehaviour
     private void RecoverMorale()
     {
         morale += 10; // Recover morale
+        Debug.Log("revocer");
         lastMoraleUpdateTime = Time.time;
         UpdateMoraleState();
     }
@@ -334,7 +335,7 @@ public class UnitNew : MonoBehaviour
         if (currentMoraleState == MoraleState.Wavering)
         {
             waveringFrameCounter++; // Increment the wavering counter
-            if (waveringFrameCounter >= 1000) // Check if it has been wavering for 10 frames
+            if (waveringFrameCounter >= 1000/20) // Check if it has been wavering for 10 frames
             {
                 RecoverMorale();
                 waveringFrameCounter = 0; // Reset counter after recovery starts

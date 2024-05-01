@@ -22,17 +22,20 @@ public class DefenderAgent : Agent
     
 
     // add all the ims installed
-    private InfluenceMapComponent im;// use this to retrive values and locations, see InfluenceMapComponent script for reference
+    public InfluenceMapComponent im;// use this to retrive values and locations, see InfluenceMapComponent script for reference
 
     public override void Initialize()
     {
-        //initialize the im
-        im = GameObject.Find("Map").GetComponent<InfluenceMapComponent>();
+        var array = im.Map.GetCellsArray();
+        Debug.Log((array.GetLength(0)).ToString());
+        Debug.Log((array.GetLength(1)).ToString());
+        /*        //initialize the im
+                im = GameObject.Find("Map").GetComponent<InfluenceMapComponent>();
 
-        if (im == null)
-        {
-            Debug.LogError("InfluenceMapComponent not found on the object named 'Map'.");
-        }
+                if (im == null)
+                {
+                    Debug.LogError("InfluenceMapComponent not found on the object named 'Map'.");
+                }*/
 
     }
     
@@ -63,6 +66,11 @@ public class DefenderAgent : Agent
     // Add observations to the sensor for melee units (e.g., infantry and cavalry) including their ID and position/direction as Vector2.
     private void AddMeleeInformation(VectorSensor sensor, UnitNew u)
     {
+        //add ideal destination 3 observation
+        Vector3 dest = getIdealDest(u);
+        sensor.AddObservation(dest);
+
+
         // Add unit ID as observation.
         sensor.AddObservation(u.ID);  
         sensor.AddObservation(new Vector2(u.transform.position.x, u.transform.position.z));
@@ -75,7 +83,11 @@ public class DefenderAgent : Agent
 
     // Add observations for ranged units (archers), similar to melee but also includes the unit's range.
     private void AddRangedInformation(VectorSensor sensor, ArcherNew u)
-    {   
+    {
+        //add ideal destination 3 observation
+        Vector3 dest = getIdealDest(u);
+        sensor.AddObservation(dest);
+
         // Add archer ID as observation.
         sensor.AddObservation(u.ID);
         
@@ -277,6 +289,7 @@ public class DefenderAgent : Agent
         ActionSegment<float> continuousactions= actionBuffers.ContinuousActions;
         float rotationAction = continuousactions[0]; // Rotation action from -1 to 1
         float distanceAction = continuousactions[1]; // Distance action from -1 to 1
+        if (distanceAction < 0f) AddReward(-1f);
         float width = 150f;
         float height = 150f;
         
@@ -284,16 +297,16 @@ public class DefenderAgent : Agent
         if (unit != null && unit.cunit != null)
         {
 
-            Debug.Log(((int)unit.morale).ToString());
+            //Debug.Log(((int)unit.morale).ToString());
             if (unit.currentMoraleState == UnitNew.MoraleState.Wavering){
                 float range = 20.0f;
 
-                newPosition = new Vector3(unit.position.x, unit.position.y, -100);
-
+                newPosition = new Vector3(unit.position.x, unit.position.y, -75);
+                Debug.Log("escaping");
             }
             else{
                 float rotationDegrees = MapRange(rotationAction, -1f, 1f, 0f, 360f);
-                float distance = MapRange(distanceAction, 0f, 1f, -75f, 75);
+                float distance = MapRange(distanceAction, 0f, 1f, 0f, 150f);
                 Quaternion rotation = Quaternion.Euler(0, rotationDegrees, 0);
                 Vector3 direction = rotation * Vector3.forward;
 
@@ -301,22 +314,45 @@ public class DefenderAgent : Agent
                 newPosition.y = unit.position.y;
                 
             }
-        
+
+            newPosition.x = Mathf.Clamp(newPosition.x, -70f, 70f);
+            newPosition.z = Mathf.Clamp(newPosition.z, -70f, 70f);
+
+            //var destMapPos = im.WorldToMapPosition(newPosition);
+            //float influence = im.GetCellValue(newPosition);
+            //Debug.Log((influence).ToString());
+            //Debug.Log((destMapPos).ToString());
+
+
+            /*var destMapPos = im.WorldToMapPosition(newPosition);
+            float influence = im.GetCellValue(newPosition);
+            Debug.Log((influence).ToString());*/
             Vector3 newDirection = (newPosition - unit.position).normalized;
                     
                 
             unit.cunit.MoveAt(newPosition, newDirection);
-
-            if (unit.position != null)
+            if (newPosition == getIdealDest(unit))
             {
-                SetReward(+0.2f);  // Positive reward for successful action
+                AddReward(1f);
+                Debug.Log("best");
+            }
+            if (im.GetCellValue(newPosition) > im.Map.MaxValue * 0.8)
+            {
+                AddReward(0.5f);
+                //Debug.Log("ideal");
+            }
+
+            //else AddReward(-0.1f);
+            /*if (unit.position != null)
+            {
+                AddReward(+0.2f);  // Positive reward for successful action
             }
             else
             {
-                SetReward(-0.1f);
+                AddReward(-0.1f);
             }
 
-            InCombate(unit);
+            InCombate(unit);*/
                 
         }
 
@@ -335,5 +371,14 @@ public class DefenderAgent : Agent
         {
             SetReward(-10f);
         }
+    }
+    private Vector3 getIdealDest(UnitNew u)
+    {
+        var mapPos = im.WorldToMapPosition(u.position);
+        Vector2Int targetMapPos;
+        float highestValue = im.SearchForHighestValueClosestToCenter(mapPos, 10, out targetMapPos);
+        Vector3 targetWorldPos = im.MapToWorldPosition(targetMapPos.x, targetMapPos.y);
+        return targetWorldPos;
+        //calculate rotation and distance to add to observation
     }
 }
