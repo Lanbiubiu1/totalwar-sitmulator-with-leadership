@@ -29,6 +29,11 @@ public class DefenderAgent : Agent
         //initialize the im
         im = GameObject.Find("Map").GetComponent<InfluenceMapComponent>();
 
+        if (im == null)
+        {
+            Debug.LogError("InfluenceMapComponent not found on the object named 'Map'.");
+        }
+
     }
     
         
@@ -158,7 +163,11 @@ public class DefenderAgent : Agent
         // add destination with highest value, reference influencemap searchhighestvaluecloesttocenter
         // this need to be per unit
         // add direction vector & distance
-        
+
+        // 1 observation
+        // sensor.AddObservation(army.units.Count);
+        //foreach (var u in army.units)
+
 
         // add all ims installed(start with the one we have for the defender team)
 
@@ -259,57 +268,65 @@ public class DefenderAgent : Agent
 
         army.DEBUG_MODE = true;
 
-        for (int i = 0; i < army.units.Count; i++){
-            int actionIndex = i * 2;
-            UnitNew unit = army.units[i];
+        ActionSegment<int> discreteActions = actionBuffers.DiscreteActions;
 
-            Vector3 newPosition;
-            float movementRange = 100.0f;
-            
-            if (unit != null && unit.cunit != null)
-            {
+       
+        UnitNew unit = FindUnitById( discreteActions[0]);
+        Vector3 newPosition;
 
-                Debug.Log(((int)unit.morale).ToString());
-                if (unit.currentMoraleState == UnitNew.MoraleState.Wavering){
-                    float range = 20.0f;
-
-                    // float posX = unit.position.x + Random.Range(-range, range);
-                    // float posZ = unit.position.z + Random.Range(-range, range);
-                    newPosition = new Vector3(unit.position.x, unit.position.y, -100);
-
-                }
-                else{
-                    float posX = actionBuffers.ContinuousActions[actionIndex];
-                    float posZ = actionBuffers.ContinuousActions[actionIndex+1];
-                    newPosition = new Vector3(posX*movementRange, unit.position.y, posZ*movementRange);
-                }
-
-                 
-
-                
+        ActionSegment<float> continuousactions= actionBuffers.ContinuousActions;
+        float rotationAction = continuousactions[0]; // Rotation action from -1 to 1
+        float distanceAction = continuousactions[1]; // Distance action from -1 to 1
+        float width = 150f;
+        float height = 150f;
         
-                Vector3 newDirection = (newPosition - unit.position).normalized;
-                    
-                //Debug.Log($"Unit {i} moving to Target Position X: {newPosition.x}, Z: {newPosition.z}, Direction: {newDirection}");
+            
+        if (unit != null && unit.cunit != null)
+        {
 
-                    // Move the unit to the new position and face the direction it's moving
-                unit.cunit.MoveAt(newPosition, newDirection);
+            Debug.Log(((int)unit.morale).ToString());
+            if (unit.currentMoraleState == UnitNew.MoraleState.Wavering){
+                float range = 20.0f;
 
-                if (unit.position != null)
-                {
-                    SetReward(+0.2f);  // Positive reward for successful action
-                }
-                else
-                {
-                    SetReward(-0.1f);
-                }
+                newPosition = new Vector3(unit.position.x, unit.position.y, -100);
 
-                InCombate(unit);
+            }
+            else{
+                float rotationDegrees = MapRange(rotationAction, -1f, 1f, 0f, 360f);
+                float distance = MapRange(distanceAction, 0f, 1f, -75f, 75);
+                Quaternion rotation = Quaternion.Euler(0, rotationDegrees, 0);
+                Vector3 direction = rotation * Vector3.forward;
+
+                newPosition = unit.position + direction * distance;
+                newPosition.y = unit.position.y;
                 
             }
+        
+            Vector3 newDirection = (newPosition - unit.position).normalized;
+                    
+                
+            unit.cunit.MoveAt(newPosition, newDirection);
 
+            if (unit.position != null)
+            {
+                SetReward(+0.2f);  // Positive reward for successful action
+            }
+            else
+            {
+                SetReward(-0.1f);
+            }
+
+            InCombate(unit);
+                
         }
 
+        
+
+    }
+
+    float MapRange(float value, float from1, float to1, float from2, float to2)
+    {
+        return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
     }
 
     private void InCombate(UnitNew myUnit)
