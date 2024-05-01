@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -317,10 +317,10 @@ public class DefenderAgent : Agent
             //Debug.Log(((int)unit.morale).ToString());
             if (unit.currentMoraleState == UnitNew.MoraleState.Wavering){
                 
-                float randomDistance = UnityEngine.Random.Range(10.0f, 50.0f);
+                //float randomDistance = UnityEngine.Random.Range(0.0f, 150.0f);
 
                 Vector3 backwardDirection = -unit.transform.forward;
-                newPosition = unit.position + backwardDirection.normalized * randomDistance;
+                newPosition = unit.position + backwardDirection.normalized * 150f;
                 
                 
                 Debug.Log("escaping");
@@ -366,18 +366,10 @@ public class DefenderAgent : Agent
                 AddReward(0.5f);
                 //Debug.Log("ideal");
             }
-
-            //else AddReward(-0.1f);
-            /*if (unit.position != null)
-            {
-                AddReward(+0.2f);  // Positive reward for successful action
+            if (unit.isInFight){
+                combatEval(unit); //newest combat eval
             }
-            else
-            {
-                AddReward(-0.1f);
-            }
-
-            InCombate(unit);*/
+            
                 
         }
 
@@ -406,4 +398,35 @@ public class DefenderAgent : Agent
         return targetWorldPos;
         //calculate rotation and distance to add to observation
     }
+
+
+    private void combatEval(UnitNew unit){
+        if (unit.lost_precentage < 0.5f) {
+            AddReward(-3f);
+        } 
+        else {AddReward(1f);}
+
+        foreach (var enemy in unit.fightingAgainst){
+            if (unit.type == UnitNew.Type.Archer){
+                if (enemy.type == UnitNew.Type.Archer){
+                    AddReward(-0.5f);
+                }
+            }
+            else if (unit.type == UnitNew.Type.Cavalry){
+                if (enemy.type == UnitNew.Type.Archer){
+                    AddReward(2f);
+                }
+            }else if(unit.type == UnitNew.Type.Infantry){
+                if (enemy.type == UnitNew.Type.Archer){
+                     AddReward(-2f);
+                }
+            }
+            
+        }
+    }
+        ////    ignoring cases like melee vs melee for now
+        //      if myunit is melee & targettype is range: addreward(-2f)for now
+        //      else if myunit is calvary & targettype is range: addreward(2f)
+        //      else if myunit is range & targettype is range: addreward(-0.5f)
+        //}
 }

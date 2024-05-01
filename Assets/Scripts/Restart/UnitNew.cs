@@ -64,6 +64,9 @@ public class UnitNew : MonoBehaviour
 
     public float lost_precentage = 0.0f;
 
+    public enum Type {Archer = 1, Infantry = 2, Cavalry = 3}
+    public Type type;
+
     private void InitializeMorale()
     {
         UpdateMoraleState();
