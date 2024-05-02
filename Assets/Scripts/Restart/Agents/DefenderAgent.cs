@@ -11,8 +11,7 @@ using Unity.MLAgents.Policies; //https://docs.unity3d.com/Packages/com.unity.ml-
 using NoOpArmy.WiseFeline.InfluenceMaps;
 using Unity.VisualScripting;
 using NetTopologySuite.Algorithm;
-
-
+using System.Net;
 
 public class DefenderAgent : Agent
 {
@@ -325,9 +324,14 @@ public class DefenderAgent : Agent
 
                 //float randomDistance = UnityEngine.Random.Range(0.0f, 150.0f);
 
-                Vector3 backwardDirection = -unit.transform.forward;
+                //Vector3 backwardDirection = -unit.transform.forward;
+                Vector3 backwardDirection = new Vector3(unit.position.x, unit.position.y, -75).normalized;
                 newPosition = unit.position + backwardDirection.normalized * 150f;
-
+                newPosition.y = unit.position.y;
+                newPosition.x = Mathf.Clamp(newPosition.x, minX, maxX);
+                newPosition.z = Mathf.Clamp(newPosition.z, minZ, maxZ);
+                unit.cunit.MoveAt(newPosition, backwardDirection);
+            
 
                 //Debug.Log("escaping");
             }
@@ -339,13 +343,15 @@ public class DefenderAgent : Agent
 
                 newPosition = unit.position + direction * distance;
 
-            }
-            newPosition.y = unit.position.y;
-            newPosition.x = Mathf.Clamp(newPosition.x, minX, maxX);
-            newPosition.z = Mathf.Clamp(newPosition.z, minZ, maxZ);
+                newPosition.y = unit.position.y;
+                newPosition.x = Mathf.Clamp(newPosition.x, minX, maxX);
+                newPosition.z = Mathf.Clamp(newPosition.z, minZ, maxZ);
 
-            Vector3 newDirection = (newPosition - unit.position).normalized;
-            unit.cunit.MoveAt(newPosition, newDirection);
+                Vector3 newDirection = (newPosition - unit.position).normalized;
+                unit.cunit.MoveAt(newPosition, newDirection);
+
+            }
+            
 
 
  /*           if (unit.isInFight) {

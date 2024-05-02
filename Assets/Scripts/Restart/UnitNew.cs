@@ -337,8 +337,11 @@ public class UnitNew : MonoBehaviour
         
         if (currentMoraleState == MoraleState.Wavering)
         {
+            /*Vector3 backwardDirection = -this.transform.forward;
+            Vector3 newPosition = this.position + backwardDirection.normalized * 150f;
+            this.cunit.MoveAt(newPosition, backwardDirection);*/
             waveringFrameCounter++; // Increment the wavering counter
-            if (waveringFrameCounter >= 1000/20) // Check if it has been wavering for 10 frames
+            if (waveringFrameCounter >= 1000/50) // Check if it has been wavering for 10 frames
             {
                 RecoverMorale();
                 waveringFrameCounter = 0; // Reset counter after recovery starts

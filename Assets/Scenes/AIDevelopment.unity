@@ -801,7 +801,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 625914211}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ae85ebf1b637137488ea9c7d4aee307b, type: 3}
   m_Name: 
@@ -815,7 +815,10 @@ MonoBehaviour:
   wall_right: {fileID: 234989992}
   wall_behind: {fileID: 942197593}
   wall_forward: {fileID: 596786126}
-  im: {fileID: 213796992}
+  defMap: {fileID: 213796992}
+  attMap: {fileID: 535738002}
+  confidentMap: {fileID: 789988444}
+  cautionMap: {fileID: 213796992}
 --- !u!114 &625914215
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -823,7 +826,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 625914211}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
   m_Name: 
@@ -853,12 +856,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 625914211}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DecisionPeriod: 10
+  DecisionPeriod: 20
   TakeActionsBetweenDecisions: 0
 --- !u!1 &676475568
 GameObject:
@@ -1110,8 +1113,8 @@ MonoBehaviour:
   firstMapName: Defender
   operations:
   - mapName: Attacker
-    operation: 0
-    additionalArgument: 0
+    operation: 7
+    additionalArgument: 1.5
   InitialDelayInSeconds: 0
   updatePositionAutomatically: 1
   delayBetweenCalculations: 5
