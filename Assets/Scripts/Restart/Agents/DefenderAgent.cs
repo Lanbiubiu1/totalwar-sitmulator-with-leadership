@@ -46,17 +46,6 @@ public class DefenderAgent : Agent
         minZ = wall_behind.transform.position.z;// + 75f;
         maxZ = wall_forward.transform.position.z;// - 75f;
 
-        //var array = im.Map.GetCellsArray();
-        //Debug.Log((array.GetLength(0)).ToString());
-        //Debug.Log((array.GetLength(1)).ToString());
-        /*        //initialize the im
-                im = GameObject.Find("Map").GetComponent<InfluenceMapComponent>();
-
-                if (im == null)
-                {
-                    Debug.LogError("InfluenceMapComponent not found on the object named 'Map'.");
-                }*/
-
     }
     
         
@@ -86,7 +75,7 @@ public class DefenderAgent : Agent
     // Add observations to the sensor for melee units (e.g., infantry and cavalry) including their ID and position/direction as Vector2.
     private void AddMeleeInformation(VectorSensor sensor, UnitNew u)
     {
-        //add ideal destination 3 observation
+        //add ideal destination 3+1+3 7 observation
         //Vector3 dest = getIdealDest(u);
         var (dest, distance, signedRotation) = getIdealDest(u);
 
@@ -108,7 +97,7 @@ public class DefenderAgent : Agent
     // Add observations for ranged units (archers), similar to melee but also includes the unit's range.
     private void AddRangedInformation(VectorSensor sensor, ArcherNew u)
     {
-        //add ideal destination 3 observation
+        //add ideal destination 7 observation
         //Vector3 dest = getIdealDest(u);
         var (dest, distance, signedRotation) = getIdealDest(u);
 
@@ -159,7 +148,7 @@ public class DefenderAgent : Agent
         sensor.AddObservation(army.infantryUnits.Count);// Add infantry count.
         foreach (var i in army.infantryUnits)
             
-            AddMeleeInformation(sensor, i);// 8 observations per unit
+            AddMeleeInformation(sensor, i);// 12 observations per unit
             
             
 
@@ -167,13 +156,13 @@ public class DefenderAgent : Agent
         sensor.AddObservation(army.archerUnits.Count);// Add archer count
         foreach (var a in army.archerUnits)
             
-            AddRangedInformation(sensor, a);// 8 observations per unit
+            AddRangedInformation(sensor, a);// 12 observations per unit
 
 
         sensor.AddObservation(army.cavalryUnits.Count);// Add cavalry count.
         foreach (var c in army.cavalryUnits)
             
-            AddMeleeInformation(sensor, c);// 8 observations per unit
+            AddMeleeInformation(sensor, c);// 12 observations per unit
 
 
 
@@ -182,19 +171,19 @@ public class DefenderAgent : Agent
         // 1 observation
         sensor.AddObservation(army.enemy.infantryUnits.Count);// Add enemy infantry count.
         foreach (var e_i in army.enemy.infantryUnits)
-            AddEnemyMeleeInformation(sensor, e_i);// 8 observations per unit
+            AddEnemyMeleeInformation(sensor, e_i);// 12 observations per unit
 
         // 1 observation
         sensor.AddObservation(army.enemy.archerUnits.Count);// Add enemy archer count
         foreach (var a in army.enemy.archerUnits)
            
-            AddEnemyRangedInformation(sensor, a);// 8 observations per unit
+            AddEnemyRangedInformation(sensor, a);// 12 observations per unit
 
         // 1 observation
         sensor.AddObservation(army.enemy.cavalryUnits.Count);// Add enemy archer count
         foreach (var c in army.enemy.cavalryUnits)
             
-            AddEnemyMeleeInformation(sensor, c); // 8 observations per unit
+            AddEnemyMeleeInformation(sensor, c); // 12 observations per unit
 
 
         // IMPORTANT: Count the number of values for each observation in comment
