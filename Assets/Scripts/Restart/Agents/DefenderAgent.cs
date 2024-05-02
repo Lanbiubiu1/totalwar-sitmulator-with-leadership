@@ -11,6 +11,9 @@ using Unity.MLAgents.Policies; //https://docs.unity3d.com/Packages/com.unity.ml-
 using NoOpArmy.WiseFeline.InfluenceMaps;
 using Unity.VisualScripting;
 using NetTopologySuite.Algorithm;
+using Unity.Barracuda;
+using TMPro;
+using static UnityEngine.UI.CanvasScaler;
 
 
 
@@ -85,8 +88,12 @@ public class DefenderAgent : Agent
     private void AddMeleeInformation(VectorSensor sensor, UnitNew u)
     {
         //add ideal destination 3 observation
-        Vector3 dest = getIdealDest(u);
+        //Vector3 dest = getIdealDest(u);
+        var (dest, distance, signedRotation) = getIdealDest(u);
+
         sensor.AddObservation(dest);
+        sensor.AddObservation(distance);
+        sensor.AddObservation(signedRotation);
 
 
         // Add unit ID as observation.
@@ -103,8 +110,13 @@ public class DefenderAgent : Agent
     private void AddRangedInformation(VectorSensor sensor, ArcherNew u)
     {
         //add ideal destination 3 observation
-        Vector3 dest = getIdealDest(u);
+        //Vector3 dest = getIdealDest(u);
+        var (dest, distance, signedRotation) = getIdealDest(u);
+
         sensor.AddObservation(dest);
+        sensor.AddObservation(distance);
+        sensor.AddObservation(signedRotation);
+        
 
         // Add archer ID as observation.
         sensor.AddObservation(u.ID);
@@ -376,14 +388,26 @@ public class DefenderAgent : Agent
     }
 
     
-    private Vector3 getIdealDest(UnitNew u)
+    private (Vector3 targetPosition, float distance, float signed_rotation) getIdealDest(UnitNew u)
     {
         var mapPos = im.WorldToMapPosition(u.position);
         Vector2Int targetMapPos;
         float highestValue = im.SearchForHighestValueClosestToCenter(mapPos, 10, out targetMapPos);
         Vector3 targetWorldPos = im.MapToWorldPosition(targetMapPos.x, targetMapPos.y);
-        return targetWorldPos;
+
         //calculate rotation and distance to add to observation
+        Vector3 direction = targetWorldPos - u.position;
+        float distance = direction.magnitude;
+
+        float rotation = Vector3.Angle(u.transform.forward, direction);
+        float signed_rotation = Vector3.SignedAngle(u.transform.forward, direction, Vector3.up);
+
+        
+        return (targetWorldPos, distance, signed_rotation);
+
+        
+        
+
     }
 
 
@@ -418,7 +442,9 @@ public class DefenderAgent : Agent
     //}
     private void movementEval(Vector3 dest, UnitNew u)
     {
-        if (dest == getIdealDest(u))
+        var (targetPos, _, _) = getIdealDest(u);
+        //if (dest == getIdealDest(u))
+        if(dest == targetPos)
         {
             AddReward(0.2f);
             //Debug.Log("best");
