@@ -11,9 +11,8 @@ using Unity.MLAgents.Policies; //https://docs.unity3d.com/Packages/com.unity.ml-
 using NoOpArmy.WiseFeline.InfluenceMaps;
 using Unity.VisualScripting;
 using NetTopologySuite.Algorithm;
-using Unity.Barracuda;
-using TMPro;
-using static UnityEngine.UI.CanvasScaler;
+
+
 
 
 
@@ -398,11 +397,8 @@ public class DefenderAgent : Agent
         //calculate rotation and distance to add to observation
         Vector3 direction = targetWorldPos - u.position;
         float distance = direction.magnitude;
+        float signed_rotation = Vector3.SignedAngle(u.transform.forward, direction.normalized, Vector3.up);
 
-        float rotation = Vector3.Angle(u.transform.forward, direction);
-        float signed_rotation = Vector3.SignedAngle(u.transform.forward, direction, Vector3.up);
-
-        
         return (targetWorldPos, distance, signed_rotation);
 
         
