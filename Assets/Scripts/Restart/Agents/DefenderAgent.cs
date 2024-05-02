@@ -49,21 +49,7 @@ public class DefenderAgent : Agent
 
         minZ = wall_behind.transform.position.z;// + 75f;
         maxZ = wall_forward.transform.position.z;// - 75f;
-<<<<<<< HEAD
-        /*        confidentMap = InfluenceMapCollection.Instance.GetMap("Confident");
-                cautionMap = InfluenceMapCollection.Instance.GetMap("Caution");*/
-        //var array = im.Map.GetCellsArray();
-        //Debug.Log((array.GetLength(0)).ToString());
-        //Debug.Log((array.GetLength(1)).ToString());
-        /*        //initialize the im
-                im = GameObject.Find("Map").GetComponent<InfluenceMapComponent>();
 
-                if (im == null)
-                {
-                    Debug.LogError("InfluenceMapComponent not found on the object named 'Map'.");
-                }*/
-=======
->>>>>>> ryan
 
     }
 
@@ -166,40 +152,19 @@ public class DefenderAgent : Agent
         // Add counts of each unit type to the observation vector.
         sensor.AddObservation(army.infantryUnits.Count);// Add infantry count.
         foreach (var i in army.infantryUnits)
-<<<<<<< HEAD
 
-            AddMeleeInformation(sensor, i);// 8 observations per unit
-
-
-=======
-            
             AddMeleeInformation(sensor, i);// 12 observations per unit
-            
-            
->>>>>>> ryan
-
-
+   
         sensor.AddObservation(army.archerUnits.Count);// Add archer count
         foreach (var a in army.archerUnits)
-<<<<<<< HEAD
 
-            AddRangedInformation(sensor, a);// 8 observations per unit
-=======
-            
             AddRangedInformation(sensor, a);// 12 observations per unit
->>>>>>> ryan
 
 
         sensor.AddObservation(army.cavalryUnits.Count);// Add cavalry count.
         foreach (var c in army.cavalryUnits)
-<<<<<<< HEAD
 
-            AddMeleeInformation(sensor, c);// 8 observations per unit
-=======
-            
             AddMeleeInformation(sensor, c);// 12 observations per unit
->>>>>>> ryan
-
 
 
         // Add counts of each enemy unit type to the observation vector.
@@ -212,24 +177,14 @@ public class DefenderAgent : Agent
         // 1 observation
         sensor.AddObservation(army.enemy.archerUnits.Count);// Add enemy archer count
         foreach (var a in army.enemy.archerUnits)
-<<<<<<< HEAD
 
-            AddEnemyRangedInformation(sensor, a);// 8 observations per unit
-=======
-           
             AddEnemyRangedInformation(sensor, a);// 12 observations per unit
->>>>>>> ryan
-
         // 1 observation
         sensor.AddObservation(army.enemy.cavalryUnits.Count);// Add enemy archer count
         foreach (var c in army.enemy.cavalryUnits)
-<<<<<<< HEAD
 
-            AddEnemyMeleeInformation(sensor, c); // 8 observations per unit
-=======
             
             AddEnemyMeleeInformation(sensor, c); // 12 observations per unit
->>>>>>> ryan
 
 
         // IMPORTANT: Count the number of values for each observation in comment
@@ -415,11 +370,11 @@ public class DefenderAgent : Agent
         return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
     }
 
-<<<<<<< HEAD
 
-    private Vector3 getIdealDest(UnitNew u)
+
+    private (Vector3 targetPosition, float distance, float signed_rotation) getIdealDest(UnitNew u)
     {
-        
+
         if (u.currentMoraleState is UnitNew.MoraleState.Confident || u.currentMoraleState is UnitNew.MoraleState.Impetuous
             || u.currentMoraleState is UnitNew.MoraleState.Eager)
         {
@@ -428,7 +383,10 @@ public class DefenderAgent : Agent
             Vector2Int targetMapPos;
             float highestValue = map.SearchForHighestValueClosestToCenter(mapPos, 50, out targetMapPos);
             Vector3 targetWorldPos = map.MapToWorldPosition(targetMapPos.x, targetMapPos.y);
-            return targetWorldPos;
+            Vector3 direction = targetWorldPos - u.position;
+            float distance = direction.magnitude;
+            float signed_rotation = Vector3.SignedAngle(u.transform.forward, direction.normalized, Vector3.up);
+            return (targetWorldPos, distance, signed_rotation);
         }
         else
         {
@@ -437,12 +395,17 @@ public class DefenderAgent : Agent
             Vector2Int targetMapPos;
             float highestValue = map.SearchForHighestValueClosestToCenter(mapPos, 50, out targetMapPos);
             Vector3 targetWorldPos = map.MapToWorldPosition(targetMapPos.x, targetMapPos.y);
-            return targetWorldPos;
+            //calculate rotation and distance to add to observation
+            Vector3 direction = targetWorldPos - u.position;
+            float distance = direction.magnitude;
+            float signed_rotation = Vector3.SignedAngle(u.transform.forward, direction.normalized, Vector3.up);
+            return (targetWorldPos, distance, signed_rotation);
         }
-=======
+    }
     
-    private (Vector3 targetPosition, float distance, float signed_rotation) getIdealDest(UnitNew u)
+/*    private (Vector3 targetPosition, float distance, float signed_rotation) getIdealDest(UnitNew u)
     {
+
         var mapPos = im.WorldToMapPosition(u.position);
         Vector2Int targetMapPos;
         float highestValue = im.SearchForHighestValueClosestToCenter(mapPos, 10, out targetMapPos);
@@ -457,9 +420,8 @@ public class DefenderAgent : Agent
 
         
         
->>>>>>> ryan
 
-    }
+    }*/
 
 
     private void combatEval(UnitNew unit){
@@ -493,24 +455,18 @@ public class DefenderAgent : Agent
     //}
     private void movementEval(Vector3 dest, UnitNew u)
     {
-<<<<<<< HEAD
         if (u.currentMoraleState is UnitNew.MoraleState.Confident || u.currentMoraleState is UnitNew.MoraleState.Impetuous
             || u.currentMoraleState is UnitNew.MoraleState.Eager)
-=======
-        var (targetPos, _, _) = getIdealDest(u);
-        //if (dest == getIdealDest(u))
-        if(dest == targetPos)
->>>>>>> ryan
         {
-
             var v = confidentMap.GetCellValue(dest);
-            var v2 = confidentMap.GetCellValue(getIdealDest(u));
+            var (targetPos, _, _) = getIdealDest(u);
+            var v2 = confidentMap.GetCellValue(targetPos);
             if (v == v2)
             {
                 AddReward(1f);
                 Debug.Log("best");
             }
-            else if(v >= (v2 * 0.8f))
+            else if (v >= (v2 * 0.8f))
             {
                 AddReward(0.2f);
                 Debug.Log("acceptable");
@@ -519,7 +475,8 @@ public class DefenderAgent : Agent
         else
         {
             var v = cautionMap.GetCellValue(dest);
-            var v2 = cautionMap.GetCellValue(getIdealDest(u));
+            var (targetPos, _, _) = getIdealDest(u);
+            var v2 = cautionMap.GetCellValue(targetPos);
             if (v == v2)
             {
                 AddReward(1f);
@@ -532,10 +489,5 @@ public class DefenderAgent : Agent
             }
         }
 
-/*        if (defMap.GetCellValue(dest) > defMap.Map.MaxValue * 0.6)
-        {
-            AddReward(0.3f);
-            Debug.Log("ideal");
-        }*/
     }
 }
