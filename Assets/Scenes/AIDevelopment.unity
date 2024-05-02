@@ -818,7 +818,7 @@ MonoBehaviour:
   defMap: {fileID: 213796992}
   attMap: {fileID: 535738002}
   confidentMap: {fileID: 789988444}
-  cautionMap: {fileID: 213796992}
+  cautionMap: {fileID: 63951852}
 --- !u!114 &625914215
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -832,7 +832,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 215
+    VectorObservationSize: 237
     NumStackedVectorObservations: 3
     m_ActionSpec:
       m_NumContinuousActions: 2
