@@ -38,15 +38,15 @@ public class DefenderAgent : Agent
 
     public override void Initialize()
     {
-        minX = wall_left.transform.position.x + 75f;  
-        maxX = wall_right.transform.position.x - 75f;
+        minX = wall_left.transform.position.x;// + 75f;  
+        maxX = wall_right.transform.position.x;// - 75f;
 
-        minZ = wall_behind.transform.position.z + 75f;
-        maxZ = wall_forward.transform.position.z - 75f;
+        minZ = wall_behind.transform.position.z;// + 75f;
+        maxZ = wall_forward.transform.position.z;// - 75f;
 
-        var array = im.Map.GetCellsArray();
-        Debug.Log((array.GetLength(0)).ToString());
-        Debug.Log((array.GetLength(1)).ToString());
+        //var array = im.Map.GetCellsArray();
+        //Debug.Log((array.GetLength(0)).ToString());
+        //Debug.Log((array.GetLength(1)).ToString());
         /*        //initialize the im
                 im = GameObject.Find("Map").GetComponent<InfluenceMapComponent>();
 
@@ -352,22 +352,15 @@ public class DefenderAgent : Agent
             Vector3 newDirection = (newPosition - unit.position).normalized;   
             unit.cunit.MoveAt(newPosition, newDirection);
 
-            float influence = im.GetCellValue(newPosition);
-            Debug.Log(influence.ToString());
+            //float influence = im.GetCellValue(newPosition);
+            //Debug.Log(influence.ToString());
 
-
-            if (newPosition == getIdealDest(unit))
-            {
-                AddReward(1f);
-                Debug.Log("best");
-            }
-            if (im.GetCellValue(newPosition) > im.Map.MaxValue * 0.8)
-            {
-                AddReward(0.5f);
-                //Debug.Log("ideal");
-            }
             if (unit.isInFight){
                 combatEval(unit); //newest combat eval
+            }
+            if(unit.state is Utils.UnitState.MOVING)
+            {
+                movementEval(newPosition, unit);
             }
             
                 
@@ -396,31 +389,44 @@ public class DefenderAgent : Agent
 
     private void combatEval(UnitNew unit){
         if (unit.lost_precentage < 0.5f) {
-            AddReward(-3f);
+            AddReward(-0.5f);
         } 
-        else {AddReward(1f);}
+        else {AddReward(0.2f);}
 
         foreach (var enemy in unit.fightingAgainst){
             if (unit.type == UnitNew.Type.Archer){
                 if (enemy.type == UnitNew.Type.Archer){
-                    AddReward(-0.5f);
+                    AddReward(-0.2f);
                 }
             }
             else if (unit.type == UnitNew.Type.Cavalry){
                 if (enemy.type == UnitNew.Type.Archer){
-                    AddReward(2f);
+                    AddReward(0.2f);
                 }
             }else if(unit.type == UnitNew.Type.Infantry){
                 if (enemy.type == UnitNew.Type.Archer){
-                     AddReward(-2f);
+                     AddReward(-0.2f);
                 }
             }
             
         }
     }
-        ////    ignoring cases like melee vs melee for now
-        //      if myunit is melee & targettype is range: addreward(-2f)for now
-        //      else if myunit is calvary & targettype is range: addreward(2f)
-        //      else if myunit is range & targettype is range: addreward(-0.5f)
-        //}
+    ////    ignoring cases like melee vs melee for now
+    //      if myunit is melee & targettype is range: addreward(-2f)for now
+    //      else if myunit is calvary & targettype is range: addreward(2f)
+    //      else if myunit is range & targettype is range: addreward(-0.5f)
+    //}
+    private void movementEval(Vector3 dest, UnitNew u)
+    {
+        if (dest == getIdealDest(u))
+        {
+            AddReward(0.2f);
+            //Debug.Log("best");
+        }
+        if (im.GetCellValue(dest) > im.Map.MaxValue * 0.9)
+        {
+            AddReward(0.1f);
+            //Debug.Log("ideal");
+        }
+    }
 }

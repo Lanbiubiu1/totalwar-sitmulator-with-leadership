@@ -190,7 +190,7 @@ GameObject:
   - component: {fileID: 213796992}
   - component: {fileID: 213796991}
   m_Layer: 0
-  m_Name: Map
+  m_Name: DefenderMap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -236,12 +236,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   is2dMap: 0
-  width: 150
-  height: 150
+  width: 152
+  height: 152
   cellSize: 1
   CreateOnAwake: 1
-  mapName: enemies
-  lowestColor: {r: 0, g: 0.18386173, b: 1, a: 0.58}
+  mapName: Defender
+  lowestColor: {r: 1, g: 1, b: 1, a: 1}
   highestColor: {r: 1, g: 0, b: 0.16208458, a: 0.58}
   drawGizmos: 1
   delayBetweenMinMaxUpdates: 1
@@ -696,6 +696,10 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 10000
   army: {fileID: 625914213}
+  wall_left: {fileID: 1798753550}
+  wall_right: {fileID: 234989992}
+  wall_behind: {fileID: 942197593}
+  wall_forward: {fileID: 596786126}
   im: {fileID: 213796992}
 --- !u!114 &625914215
 MonoBehaviour:

@@ -214,23 +214,45 @@ public class ArmyNew : MonoBehaviour
     }
 
     public void AttachScript(List<UnitNew> units) {
-
+        InfluenceMapTemplate myMapTemplate = AssetDatabase.LoadAssetAtPath<InfluenceMapTemplate>("Assets/EnemyTemplate.asset");
+        InfluenceMapTemplate meleeTemplate = AssetDatabase.LoadAssetAtPath<InfluenceMapTemplate>("Assets/Scripts/MeleeTemplate.asset");
+        InfluenceMapTemplate rangeTemplate = AssetDatabase.LoadAssetAtPath<InfluenceMapTemplate>("Assets/Scripts/RangeTemplate.asset");
         foreach (UnitNew unit in units){
-            unit.gameObject.AddComponent<InfluencerAgent>(); 
-            unit.gameObject.GetComponent<InfluencerAgent>().mapComponent =
-                GameObject.Find("Map").GetComponent<InfluenceMapComponent>(); 
+             
             
-            if (role == ArmyRole.DEFENDER){
-                InfluenceMapTemplate myMapTemplate = AssetDatabase.LoadAssetAtPath<InfluenceMapTemplate>("Assets/EnemyTemplate.asset");
+            if (this.role == ArmyRole.DEFENDER)
+            {
+                unit.gameObject.AddComponent<InfluencerAgent>();
+                unit.gameObject.GetComponent<InfluencerAgent>().mapName = "Defender";
 
-                if(myMapTemplate != null) {
-                    unit.gameObject.GetComponent<InfluencerAgent>().myMapTemplate = myMapTemplate;
+                unit.gameObject.GetComponent<InfluencerAgent>().mapComponent =
+                    GameObject.Find("DefenderMap").GetComponent<InfluenceMapComponent>();
+                //InfluenceMapTemplate myMapTemplate = AssetDatabase.LoadAssetAtPath<InfluenceMapTemplate>("Assets/EnemyTemplate.asset");
+
+                if (unit.type is UnitNew.Type.Archer) {
+                    unit.gameObject.GetComponent<InfluencerAgent>().myMapTemplate = rangeTemplate;
                 } else {
-                    Debug.LogError("EnemyTemplate not found in Assets.");
+                    unit.gameObject.GetComponent<InfluencerAgent>().myMapTemplate = meleeTemplate;
                 }
 
             }
-            
+/*            else
+            {
+                unit.gameObject.AddComponent<InfluencerAgent>();
+                unit.gameObject.GetComponent<InfluencerAgent>().mapName = "Attacker";
+                unit.gameObject.GetComponent<InfluencerAgent>().mapComponent = GameObject.Find("AttackerMap").GetComponent<InfluenceMapComponent>();
+                //InfluenceMapTemplate myMapTemplate = AssetDatabase.LoadAssetAtPath<InfluenceMapTemplate>("Assets/EnemyTemplate.asset");
+
+                if (unit.type is UnitNew.Type.Archer)
+                {
+                    unit.gameObject.GetComponent<InfluencerAgent>().myMapTemplate = rangeTemplate;
+                }
+                else
+                {
+                    unit.gameObject.GetComponent<InfluencerAgent>().myMapTemplate = meleeTemplate;
+                }
+            }*/
+
         }
             
     }
@@ -312,7 +334,7 @@ public class ArmyNew : MonoBehaviour
         }
 
         
-        AttachScript(units);
+        
         foreach(var archer in archerUnits){
             archer.type = UnitNew.Type.Archer;
         }
@@ -323,7 +345,7 @@ public class ArmyNew : MonoBehaviour
             cavalry.type = UnitNew.Type.Cavalry;
         }
 
-        
+        AttachScript(units);
 
 
     }
