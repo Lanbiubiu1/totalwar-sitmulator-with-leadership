@@ -31,10 +31,15 @@ public class DefenderAgent : Agent
 
 
 
-    
+
 
     // add all the ims installed
-    public InfluenceMapComponent im;// use this to retrive values and locations, see InfluenceMapComponent script for reference
+    public InfluenceMapComponent defMap;
+    public InfluenceMapComponent attMap;
+    public InfluenceMapComponentBase confidentMap;
+    public InfluenceMapComponentBase cautionMap;
+    //public InfluenceMapComponent confidentMap;
+    //public InfluenceMapComponent cautionMap;// use this to retrive values and locations, see InfluenceMapComponent script for reference
 
     public override void Initialize()
     {
@@ -43,7 +48,8 @@ public class DefenderAgent : Agent
 
         minZ = wall_behind.transform.position.z;// + 75f;
         maxZ = wall_forward.transform.position.z;// - 75f;
-
+        /*        confidentMap = InfluenceMapCollection.Instance.GetMap("Confident");
+                cautionMap = InfluenceMapCollection.Instance.GetMap("Caution");*/
         //var array = im.Map.GetCellsArray();
         //Debug.Log((array.GetLength(0)).ToString());
         //Debug.Log((array.GetLength(1)).ToString());
@@ -56,15 +62,15 @@ public class DefenderAgent : Agent
                 }*/
 
     }
-    
-        
 
-    
+
+
+
 
     // Update is called once per frame.
     private void Update()
     {
-        
+
         // If the game is not currently playing, adjust the Brain's VectorObservationSize based on the army's unit counts.
         // This dynamically changes the input size for the neural network based on the composition of the army.
         if (!Application.isPlaying)
@@ -90,13 +96,13 @@ public class DefenderAgent : Agent
 
 
         // Add unit ID as observation.
-        sensor.AddObservation(u.ID);  
+        sensor.AddObservation(u.ID);
         sensor.AddObservation(new Vector2(u.transform.position.x, u.transform.position.z));
         sensor.AddObservation(new Vector2(u.transform.forward.x, u.transform.forward.z));
 
         sensor.AddObservation(u.lost_precentage); //loss percentage
         sensor.AddObservation((float)u.state);
-        sensor.AddObservation(u.morale/100.0f);
+        sensor.AddObservation(u.morale / 100.0f);
     }
 
     // Add observations for ranged units (archers), similar to melee but also includes the unit's range.
@@ -108,34 +114,34 @@ public class DefenderAgent : Agent
 
         // Add archer ID as observation.
         sensor.AddObservation(u.ID);
-        
+
         sensor.AddObservation(new Vector2(u.transform.position.x, u.transform.position.z));
         sensor.AddObservation(new Vector2(u.transform.forward.x, u.transform.forward.z));
         //sensor.AddObservation(u.range); // Add archer range as observation.
 
         sensor.AddObservation(u.lost_precentage); //loss percentage
         sensor.AddObservation((float)u.state);
-        sensor.AddObservation(u.morale/100.0f);
+        sensor.AddObservation(u.morale / 100.0f);
     }
 
     private void AddEnemyMeleeInformation(VectorSensor sensor, UnitNew u)
-    { 
+    {
         sensor.AddObservation(u.ID);
         sensor.AddObservation((float)u.army.role);// 0 is the attacker and 1 is the defender
         sensor.AddObservation(new Vector2(u.transform.position.x, u.transform.position.z));
         sensor.AddObservation(new Vector2(u.transform.forward.x, u.transform.forward.z));
-        sensor.AddObservation(u.morale/100.0f);
+        sensor.AddObservation(u.morale / 100.0f);
         sensor.AddObservation((float)u.state);
 
     }
 
     private void AddEnemyRangedInformation(VectorSensor sensor, ArcherNew u)
-    { 
+    {
         sensor.AddObservation(u.ID);
         sensor.AddObservation((float)u.army.role);// 0 is the attacker and 1 is the defender
         sensor.AddObservation(new Vector2(u.transform.position.x, u.transform.position.z));
         sensor.AddObservation(new Vector2(u.transform.forward.x, u.transform.forward.z));
-        sensor.AddObservation(u.morale/100.0f);
+        sensor.AddObservation(u.morale / 100.0f);
         sensor.AddObservation((float)u.state);
 
     }
@@ -147,21 +153,21 @@ public class DefenderAgent : Agent
         // Add counts of each unit type to the observation vector.
         sensor.AddObservation(army.infantryUnits.Count);// Add infantry count.
         foreach (var i in army.infantryUnits)
-            
+
             AddMeleeInformation(sensor, i);// 8 observations per unit
-            
-            
+
+
 
 
         sensor.AddObservation(army.archerUnits.Count);// Add archer count
         foreach (var a in army.archerUnits)
-            
+
             AddRangedInformation(sensor, a);// 8 observations per unit
 
 
         sensor.AddObservation(army.cavalryUnits.Count);// Add cavalry count.
         foreach (var c in army.cavalryUnits)
-            
+
             AddMeleeInformation(sensor, c);// 8 observations per unit
 
 
@@ -176,19 +182,19 @@ public class DefenderAgent : Agent
         // 1 observation
         sensor.AddObservation(army.enemy.archerUnits.Count);// Add enemy archer count
         foreach (var a in army.enemy.archerUnits)
-           
+
             AddEnemyRangedInformation(sensor, a);// 8 observations per unit
 
         // 1 observation
         sensor.AddObservation(army.enemy.cavalryUnits.Count);// Add enemy archer count
         foreach (var c in army.enemy.cavalryUnits)
-            
+
             AddEnemyMeleeInformation(sensor, c); // 8 observations per unit
 
 
         // IMPORTANT: Count the number of values for each observation in comment
         // For example, a vector3 contains 3 observations
-        
+
 
         // add destination with highest value, reference influencemap searchhighestvaluecloesttocenter
         // this need to be per unit
@@ -202,7 +208,7 @@ public class DefenderAgent : Agent
         // add all ims installed(start with the one we have for the defender team)
 
 
-       
+
 
     }
 
@@ -300,73 +306,60 @@ public class DefenderAgent : Agent
 
         ActionSegment<int> discreteActions = actionBuffers.DiscreteActions;
 
-       
-        UnitNew unit = FindUnitById( discreteActions[0]);
+
+        UnitNew unit = FindUnitById(discreteActions[0]);
         Vector3 newPosition;
 
-        ActionSegment<float> continuousactions= actionBuffers.ContinuousActions;
+        ActionSegment<float> continuousactions = actionBuffers.ContinuousActions;
         float rotationAction = continuousactions[0]; // Rotation action from -1 to 1
         float distanceAction = continuousactions[1]; // Distance action from -1 to 1
-        if (distanceAction < 0f) AddReward(-1f);
-        
-        
-            
+        if (distanceAction < 0f) AddReward(-0.1f);
+
+
+
         if (unit != null && unit.cunit != null)
         {
 
             //Debug.Log(((int)unit.morale).ToString());
-            if (unit.currentMoraleState == UnitNew.MoraleState.Wavering){
-                
+            if (unit.currentMoraleState == UnitNew.MoraleState.Wavering) {
+
                 //float randomDistance = UnityEngine.Random.Range(0.0f, 150.0f);
 
                 Vector3 backwardDirection = -unit.transform.forward;
                 newPosition = unit.position + backwardDirection.normalized * 150f;
-                
-                
-                Debug.Log("escaping");
+
+
+                //Debug.Log("escaping");
             }
-            else{
+            else {
                 float rotationDegrees = MapRange(rotationAction, -1f, 1f, 0f, 360f);
                 float distance = MapRange(distanceAction, 0f, 1f, 0f, 150f);
                 Quaternion rotation = Quaternion.Euler(0, rotationDegrees, 0);
                 Vector3 direction = rotation * unit.transform.forward.normalized;
 
                 newPosition = unit.position + direction * distance;
-                
+
             }
             newPosition.y = unit.position.y;
             newPosition.x = Mathf.Clamp(newPosition.x, minX, maxX);
             newPosition.z = Mathf.Clamp(newPosition.z, minZ, maxZ);
 
-           
-
-            //var destMapPos = im.WorldToMapPosition(newPosition);
-            //float influence = im.GetCellValue(newPosition);
-            //Debug.Log((influence).ToString());
-            //Debug.Log((destMapPos).ToString());
-
-
-            /*var destMapPos = im.WorldToMapPosition(newPosition);
-            float influence = im.GetCellValue(newPosition);
-            Debug.Log((influence).ToString());*/
-            Vector3 newDirection = (newPosition - unit.position).normalized;   
+            Vector3 newDirection = (newPosition - unit.position).normalized;
             unit.cunit.MoveAt(newPosition, newDirection);
 
-            //float influence = im.GetCellValue(newPosition);
-            //Debug.Log(influence.ToString());
 
-            if (unit.isInFight){
+ /*           if (unit.isInFight) {
                 combatEval(unit); //newest combat eval
-            }
-            if(unit.state is Utils.UnitState.MOVING)
+            }*/
+            if (unit.state is Utils.UnitState.MOVING)
             {
                 movementEval(newPosition, unit);
             }
-            
-                
+
+
         }
 
-        
+
 
     }
 
@@ -375,37 +368,52 @@ public class DefenderAgent : Agent
         return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
     }
 
-    
+
     private Vector3 getIdealDest(UnitNew u)
     {
-        var mapPos = im.WorldToMapPosition(u.position);
-        Vector2Int targetMapPos;
-        float highestValue = im.SearchForHighestValueClosestToCenter(mapPos, 10, out targetMapPos);
-        Vector3 targetWorldPos = im.MapToWorldPosition(targetMapPos.x, targetMapPos.y);
-        return targetWorldPos;
-        //calculate rotation and distance to add to observation
+        
+        if (u.currentMoraleState is UnitNew.MoraleState.Confident || u.currentMoraleState is UnitNew.MoraleState.Impetuous
+            || u.currentMoraleState is UnitNew.MoraleState.Eager)
+        {
+            var map = confidentMap;
+            var mapPos = map.WorldToMapPosition(u.position);
+            Vector2Int targetMapPos;
+            float highestValue = map.SearchForHighestValueClosestToCenter(mapPos, 50, out targetMapPos);
+            Vector3 targetWorldPos = map.MapToWorldPosition(targetMapPos.x, targetMapPos.y);
+            return targetWorldPos;
+        }
+        else
+        {
+            var map = cautionMap;
+            var mapPos = map.WorldToMapPosition(u.position);
+            Vector2Int targetMapPos;
+            float highestValue = map.SearchForHighestValueClosestToCenter(mapPos, 50, out targetMapPos);
+            Vector3 targetWorldPos = map.MapToWorldPosition(targetMapPos.x, targetMapPos.y);
+            return targetWorldPos;
+        }
+
     }
 
 
     private void combatEval(UnitNew unit){
         if (unit.lost_precentage < 0.5f) {
-            AddReward(-0.5f);
+            AddReward(-0.1f);
         } 
         else {AddReward(0.2f);}
 
         foreach (var enemy in unit.fightingAgainst){
             if (unit.type == UnitNew.Type.Archer){
                 if (enemy.type == UnitNew.Type.Archer){
-                    AddReward(-0.2f);
+                    AddReward(-0.1f);
                 }
             }
             else if (unit.type == UnitNew.Type.Cavalry){
                 if (enemy.type == UnitNew.Type.Archer){
-                    AddReward(0.2f);
+                    AddReward(1f);
                 }
             }else if(unit.type == UnitNew.Type.Infantry){
                 if (enemy.type == UnitNew.Type.Archer){
-                     AddReward(-0.2f);
+                     AddReward(-0.1f);
                 }
             }
             
@@ -418,15 +426,43 @@ public class DefenderAgent : Agent
     //}
     private void movementEval(Vector3 dest, UnitNew u)
     {
-        if (dest == getIdealDest(u))
+        if (u.currentMoraleState is UnitNew.MoraleState.Confident || u.currentMoraleState is UnitNew.MoraleState.Impetuous
+            || u.currentMoraleState is UnitNew.MoraleState.Eager)
         {
-            AddReward(0.2f);
-            //Debug.Log("best");
+
+            var v = confidentMap.GetCellValue(dest);
+            var v2 = confidentMap.GetCellValue(getIdealDest(u));
+            if (v == v2)
+            {
+                AddReward(1f);
+                Debug.Log("best");
+            }
+            else if(v >= (v2 * 0.8f))
+            {
+                AddReward(0.2f);
+                Debug.Log("acceptable");
+            }
         }
-        if (im.GetCellValue(dest) > im.Map.MaxValue * 0.9)
+        else
         {
-            AddReward(0.1f);
-            //Debug.Log("ideal");
+            var v = cautionMap.GetCellValue(dest);
+            var v2 = cautionMap.GetCellValue(getIdealDest(u));
+            if (v == v2)
+            {
+                AddReward(1f);
+                Debug.Log("best");
+            }
+            else if (v >= (v2 * 0.8f))
+            {
+                AddReward(0.2f);
+                Debug.Log("acceptable");
+            }
         }
+
+/*        if (defMap.GetCellValue(dest) > defMap.Map.MaxValue * 0.6)
+        {
+            AddReward(0.3f);
+            Debug.Log("ideal");
+        }*/
     }
 }

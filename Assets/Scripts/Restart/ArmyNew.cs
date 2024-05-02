@@ -225,8 +225,8 @@ public class ArmyNew : MonoBehaviour
                 unit.gameObject.AddComponent<InfluencerAgent>();
                 unit.gameObject.GetComponent<InfluencerAgent>().mapName = "Defender";
 
-                unit.gameObject.GetComponent<InfluencerAgent>().mapComponent =
-                    GameObject.Find("DefenderMap").GetComponent<InfluenceMapComponent>();
+                /*unit.gameObject.GetComponent<InfluencerAgent>().mapComponent =
+                    GameObject.Find("DefenderMap").GetComponent<InfluenceMapComponent>();*/
                 //InfluenceMapTemplate myMapTemplate = AssetDatabase.LoadAssetAtPath<InfluenceMapTemplate>("Assets/EnemyTemplate.asset");
 
                 if (unit.type is UnitNew.Type.Archer) {
@@ -236,11 +236,11 @@ public class ArmyNew : MonoBehaviour
                 }
 
             }
-/*            else
+            else
             {
                 unit.gameObject.AddComponent<InfluencerAgent>();
                 unit.gameObject.GetComponent<InfluencerAgent>().mapName = "Attacker";
-                unit.gameObject.GetComponent<InfluencerAgent>().mapComponent = GameObject.Find("AttackerMap").GetComponent<InfluenceMapComponent>();
+                //unit.gameObject.GetComponent<InfluencerAgent>().mapComponent = GameObject.Find("AttackerMap").GetComponent<InfluenceMapComponent>();
                 //InfluenceMapTemplate myMapTemplate = AssetDatabase.LoadAssetAtPath<InfluenceMapTemplate>("Assets/EnemyTemplate.asset");
 
                 if (unit.type is UnitNew.Type.Archer)
@@ -251,7 +251,7 @@ public class ArmyNew : MonoBehaviour
                 {
                     unit.gameObject.GetComponent<InfluencerAgent>().myMapTemplate = meleeTemplate;
                 }
-            }*/
+            }
 
         }
             
