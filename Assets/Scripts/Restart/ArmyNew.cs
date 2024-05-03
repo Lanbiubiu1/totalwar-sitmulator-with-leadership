@@ -55,7 +55,7 @@ public class ArmyNew : MonoBehaviour
 
     private Vector3[] res;
 
-
+    
 
 
     public string enemySoldierLayer
@@ -383,7 +383,8 @@ public class ArmyNew : MonoBehaviour
 
         var unitMB = curUnit.AddComponent<UnitNew>();
         unitMB.Instantiate(pos, transform.forward, u.meleeHolder, soldiersHolder, u.soldierPrefab, this);
-        unitMB.ID = i;
+        //unitMB.ID = i;
+        //Debug.Log("Unit instantiated with ID: " + unitMB.ID + " at position: " + pos);
         list.Add(unitMB);
         units.Add(unitMB);
 
@@ -426,7 +427,8 @@ public class ArmyNew : MonoBehaviour
         curUnit.transform.parent = transform;
 
         var unitMB = AddArcherComponent(curUnit, pos, u.meleeStats.meleeHolder, u.meleeStats.soldierPrefab, u.rangedStats.rangedHolder, u.rangedStats.arrow);
-        unitMB.ID = i;
+        //unitMB.ID = i;
+        //Debug.Log("Unit instantiated with ID: " + unitMB.ID + " at position: " + pos);
         AddRangedCollider(curUnit, unitMB, u.rangedStats.rangedHolder.range);
 
         float frontExp = CalculateFrontalExpansion(u.meleeStats.meleeHolder.soldierDistVertical, u.meleeStats.meleeHolder.startingNumOfSoldiers, u.meleeStats.meleeHolder.startingCols, expansion);
