@@ -44,7 +44,6 @@ public class ArmyNew : MonoBehaviour
     public float expansion = 1f;
     public bool DEBUG_MODE;
 
-    
 
 
     public List<UnitNew> units;
@@ -53,6 +52,16 @@ public class ArmyNew : MonoBehaviour
 
     private Vector3[] res;
 
+    void Start()
+{
+    if (units.Count == 0)
+    {
+        units = new List<UnitNew>(FindObjectsOfType<UnitNew>());
+    }
+
+    Debug.Log($"Army {name} initialized with {units.Count} units.");
+}
+    
 
 
 
@@ -81,6 +90,16 @@ public class ArmyNew : MonoBehaviour
         }
 
     }
+
+    void Awake()
+{
+    Debug.Log($"Army {name} awake with {units.Count} units.");
+}
+
+void OnEnable()
+{
+    Debug.Log($"Army {name} enabled with {units.Count} units.");
+}
 
 
     List<UnitNew> tempList = new List<UnitNew>();
@@ -288,6 +307,7 @@ public class ArmyNew : MonoBehaviour
             else
                 AddArcherAtPos(curPos, u, i);
         }
+        Debug.Log($"Army {name} initialized with {units.Count} units.");
 
 
     }

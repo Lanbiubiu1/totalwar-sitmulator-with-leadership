@@ -322,7 +322,7 @@ public class UnitNew : MonoBehaviour
 
 
         DecreaseMoraleOnLoss();
-        Debug.Log(morale);
+        //Debug.Log(morale);
         
         if (currentMoraleState == MoraleState.Wavering)
         {

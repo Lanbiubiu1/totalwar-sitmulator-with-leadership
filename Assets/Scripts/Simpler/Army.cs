@@ -19,10 +19,10 @@ public class Army : MonoBehaviour
     {
 
         units = GetComponentsInChildren<Unit>();
-
         foreach (var u in units)
             u.Initialize();
     }
+    
 
 
 
