@@ -100,9 +100,11 @@ public class CombactManagerNew : MonoBehaviour
     private void AddSoldiersTargets(UnitNew u)
     {
         prova.Clear();
-        foreach (var enemyUnit in u.fightingAgainst)
+        foreach (var enemyUnit in u.fightingAgainst)         
             foreach (var es in enemyUnit.soldiers)
                 prova.Add(es);
+        
+           
 
         if (prova.Count == 0) return;
 

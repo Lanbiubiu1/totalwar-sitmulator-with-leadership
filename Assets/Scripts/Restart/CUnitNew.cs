@@ -26,6 +26,7 @@ public class CUnitNew : MonoBehaviour
     private bool setFinalDirection;
 
 
+
     public void Initialize(UnitNew u, PathCreator pathCreator, float noise, float attackingFactor, EndOfPathInstruction endOfPathInstruction = EndOfPathInstruction.Stop)
     {
         this.noise = noise;

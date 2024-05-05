@@ -24,6 +24,7 @@ public class UnitNew : MonoBehaviour
 
     public int ID;
 
+    public bool WallCollided;
 
     public List<SoldierNew> soldiers;
     public HashSet<UnitNew> fightingAgainst = new HashSet<UnitNew>();
@@ -281,6 +282,8 @@ public class UnitNew : MonoBehaviour
         }
 
         RecoverMorale();
+
+       
     }
 
     
