@@ -15,7 +15,7 @@ public class MeleeCollider : MonoBehaviour
         if (other.GetType() != typeof(BoxCollider)) return;
         if (other.gameObject.CompareTag("Wall"))
         {
-            //Debug.Log("Enter wall");
+            Debug.Log("Enter wall");
             isCurrentlyColliding = true;
             return;
         }
@@ -45,7 +45,7 @@ public class MeleeCollider : MonoBehaviour
         if (other.GetType() != typeof(BoxCollider)) return;
         if (other.gameObject.CompareTag("Wall"))
         {
-            //Debug.Log("Enter wall");
+            Debug.Log("stay wall");
             isCurrentlyColliding = true;
             return;
         }
@@ -57,7 +57,7 @@ public class MeleeCollider : MonoBehaviour
         if (other.GetType() != typeof(BoxCollider)) return;
         if (other.gameObject.CompareTag("Wall"))
         {
-            //Debug.Log("Enter wall");
+            Debug.Log("Exit wall");
             isCurrentlyColliding = false;
             return;
         }
