@@ -28,6 +28,7 @@ public class UnitNew : MonoBehaviour
 
     public static int NextID = 0;
     public int ID;
+    public bool WallCollided;
 
 
     public List<SoldierNew> soldiers;
