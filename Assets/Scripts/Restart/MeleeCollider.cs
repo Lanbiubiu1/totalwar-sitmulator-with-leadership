@@ -7,12 +7,18 @@ using static Utils;
 public class MeleeCollider : MonoBehaviour
 {
     public UnitNew unit;
-
+    private bool isCurrentlyColliding;
+    private int frameCount = 0;
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.GetType() != typeof(BoxCollider)) return;
-
+        if (other.gameObject.CompareTag("Wall"))
+        {
+            Debug.Log("Enter wall");
+            isCurrentlyColliding = true;
+            return;
+        }
 
         if (unit.fightingAgainst.Count == 0)
             unit.fightingTarget = other.GetComponentInParent<UnitNew>();
@@ -37,14 +43,24 @@ public class MeleeCollider : MonoBehaviour
     private void OnTriggerStay(Collider other)
     {
         if (other.GetType() != typeof(BoxCollider)) return;
-
+        if (other.gameObject.CompareTag("Wall"))
+        {
+            Debug.Log("stay wall");
+            isCurrentlyColliding = true;
+            return;
+        }
         Debug.DrawLine(unit.position + Vector3.up * 5, other.gameObject.transform.position + Vector3.up, Color.magenta);
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (other.GetType() != typeof(BoxCollider)) return;
-
+        if (other.gameObject.CompareTag("Wall"))
+        {
+            Debug.Log("Exit wall");
+            isCurrentlyColliding = false;
+            return;
+        }
 
         unit.fightingAgainst.Remove(other.GetComponentInParent<UnitNew>());
 
@@ -57,6 +73,17 @@ public class MeleeCollider : MonoBehaviour
 
         if (unit.fightingTarget == other.GetComponentInParent<UnitNew>())
             unit.fightingTarget = unit.fightingAgainst.OrderBy(en => Vector3.SqrMagnitude(en.position - unit.position)).First();
+    }
+
+    private void Update()
+    {
+        frameCount++; // Increment the frame count each frame
+
+        if (frameCount >= 5)
+        {
+            unit.WallCollided = isCurrentlyColliding; // Update the 'wall' flag in the Unit script
+            frameCount = 0; // Reset the frame counter
+        }
     }
 
 
