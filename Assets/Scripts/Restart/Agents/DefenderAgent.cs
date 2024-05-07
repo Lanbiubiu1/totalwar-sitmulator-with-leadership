@@ -69,11 +69,11 @@ public class DefenderAgent : Agent
 
         // If the game is not currently playing, adjust the Brain's VectorObservationSize based on the army's unit counts.
         // This dynamically changes the input size for the neural network based on the composition of the army.
-        if (!Application.isPlaying)
+        /*if (Application.isPlaying)
             GetComponent<BehaviorParameters>().BrainParameters.VectorObservationSize =
                 5 * (army.infantryStats.Count + army.cavalryStats.Count) +
                 6 * (army.archersStats.Count) +
-                3;
+                3;*/
     }
 
     // Override the OnEpisodeBegin method from the Agent class. Used for resetting the environment at the start of training episodes.
@@ -324,19 +324,32 @@ public class DefenderAgent : Agent
 
             //Debug.Log(((int)unit.morale).ToString());
             if (unit.currentMoraleState == UnitNew.MoraleState.Wavering) {
+                float rotationDegrees = MapRange(rotationAction, -1f, 1f, 0f, 360f);
+                float distance = MapRange(distanceAction, 0f, 1f, 0f, 150f);
+                Quaternion rotation = Quaternion.Euler(0, rotationDegrees, 0);
+                Vector3 direction = rotation * unit.transform.forward.normalized;
+
+                newPosition = unit.position + direction * distance;
+
+                newPosition.y = unit.position.y;
+                newPosition.x = Mathf.Clamp(newPosition.x, minX, maxX);
+                newPosition.z = Mathf.Clamp(newPosition.z, minZ, maxZ);
+
+                Vector3 newDirection = (newPosition - unit.position).normalized;
 
                 //float randomDistance = UnityEngine.Random.Range(0.0f, 150.0f);
 
                 //Vector3 backwardDirection = -unit.transform.forward;
-                Vector3 backwardDirection = new Vector3(unit.position.x, unit.position.y, -75).normalized;
+                /*Vector3 backwardDirection = new Vector3(unit.position.x, unit.position.y, -75).normalized;
                 newPosition = unit.position + backwardDirection.normalized * 150f;
                 newPosition.y = unit.position.y;
                 newPosition.x = Mathf.Clamp(newPosition.x, minX, maxX);
                 newPosition.z = Mathf.Clamp(newPosition.z, minZ, maxZ);
-                unit.cunit.MoveAt(newPosition, backwardDirection);
-            
+                unit.cunit.MoveAt(newPosition, backwardDirection);*/
+
 
                 //Debug.Log("escaping");
+
             }
             else {
                 float rotationDegrees = MapRange(rotationAction, -1f, 1f, 0f, 360f);
@@ -389,7 +402,7 @@ public class DefenderAgent : Agent
             var map = confidentMap;
             var mapPos = map.WorldToMapPosition(u.position);
             Vector2Int targetMapPos;
-            float highestValue = map.SearchForHighestValueClosestToCenter(mapPos, 50, out targetMapPos);
+            float highestValue = map.SearchForHighestValueClosestToCenter(mapPos, 150, out targetMapPos);
             Vector3 targetWorldPos = map.MapToWorldPosition(targetMapPos.x, targetMapPos.y);
             Vector3 direction = targetWorldPos - u.position;
             float distance = direction.magnitude;
@@ -401,7 +414,7 @@ public class DefenderAgent : Agent
             var map = cautionMap;
             var mapPos = map.WorldToMapPosition(u.position);
             Vector2Int targetMapPos;
-            float highestValue = map.SearchForHighestValueClosestToCenter(mapPos, 50, out targetMapPos);
+            float highestValue = map.SearchForHighestValueClosestToCenter(mapPos, 150, out targetMapPos);
             Vector3 targetWorldPos = map.MapToWorldPosition(targetMapPos.x, targetMapPos.y);
             //calculate rotation and distance to add to observation
             Vector3 direction = targetWorldPos - u.position;
@@ -440,8 +453,8 @@ public class DefenderAgent : Agent
 
         foreach (var enemy in unit.fightingAgainst){
             if (unit.type == UnitNew.Type.Archer){
-                if (enemy.type == UnitNew.Type.Archer){
-                    AddReward(-0.1f);
+                if (enemy.type != UnitNew.Type.Archer){
+                    AddReward(0.2f);
                 }
             }
             else if (unit.type == UnitNew.Type.Cavalry){
@@ -449,8 +462,8 @@ public class DefenderAgent : Agent
                     AddReward(1f);
                 }
             }else if(unit.type == UnitNew.Type.Infantry){
-                if (enemy.type == UnitNew.Type.Archer){
-                     AddReward(-0.1f);
+                if (enemy.type != UnitNew.Type.Archer){
+                     AddReward(0.2f);
                 }
             }
             
@@ -477,12 +490,12 @@ public class DefenderAgent : Agent
             if (v == v2)
             {
                 AddReward(1f);
-                //Debug.Log("best");
+                Debug.Log("best");
             }
             else if (v >= (v2 * 0.8f))
             {
                 AddReward(0.2f);
-                //Debug.Log("acceptable");
+                Debug.Log("acceptable");
             }
         }
         else
@@ -493,12 +506,12 @@ public class DefenderAgent : Agent
             if (v == v2)
             {
                 AddReward(1f);
-                //Debug.Log("best");
+                Debug.Log("best");
             }
             else if (v >= (v2 * 0.8f))
             {
                 AddReward(0.2f);
-                //Debug.Log("acceptable");
+                Debug.Log("acceptable");
             }
         }
 

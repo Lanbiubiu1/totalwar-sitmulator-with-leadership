@@ -38,7 +38,7 @@ public class CombactManagerNew : MonoBehaviour
     {
         int currentDefenderCount = unitsDefender.Sum(unit => unit.soldiers.Count);
         bool defendersReduced = currentDefenderCount <= initialDefenderCount * 0.2;
-        bool timeElapsed = (Time.time - startTime) >= 100; // 480 seconds = 8 minutes
+        bool timeElapsed = (Time.time - startTime) >= 480; // 480 seconds = 8 minutes
 
         return defendersReduced || timeElapsed;
     }

@@ -89,6 +89,15 @@ public class UnitNew : MonoBehaviour
 
     private void RecoverMorale()
     {
+        int away = 0;
+        if (army.role == ArmyRole.DEFENDER)
+        {
+            away = -1;
+        }
+        else away = 1;
+        Vector3 backwardDirection = new Vector3(this.position.x, this.position.y, 75 * away).normalized;
+        Vector3 newPosition = this.position + backwardDirection * 20f;
+        this.cunit.MoveAt(newPosition, backwardDirection);
         morale += 10; // Recover morale
         Debug.Log("revocer");
         lastMoraleUpdateTime = Time.time;
@@ -324,6 +333,7 @@ public class UnitNew : MonoBehaviour
     public bool letItPass;
     private void Update()
     {
+        
         _position = transform.position;
         _direction = transform.forward;
 
@@ -343,15 +353,25 @@ public class UnitNew : MonoBehaviour
         
         if (currentMoraleState == MoraleState.Wavering)
         {
-            /*Vector3 backwardDirection = -this.transform.forward;
-            Vector3 newPosition = this.position + backwardDirection.normalized * 150f;
+            //Debug.Log("wavering");
+/*            Vector3 backwardDirection = -this.transform.forward;
+            Vector3 newPosition = this.position + backwardDirection.normalized * 20f;
+            newPosition.y = this.position.y;
+            newPosition.x = Mathf.Clamp(newPosition.x, -70, 70);
+            newPosition.z = Mathf.Clamp(newPosition.z, -70, 70);
             this.cunit.MoveAt(newPosition, backwardDirection);*/
+
+
+
+
             waveringFrameCounter++; // Increment the wavering counter
-            if (waveringFrameCounter >= 1000/50) // Check if it has been wavering for 10 frames
+            if (waveringFrameCounter >= 100) // Check if it has been wavering for 10 frames
             {
+
                 RecoverMorale();
                 waveringFrameCounter = 0; // Reset counter after recovery starts
             }
+            
         }
         else
         {
