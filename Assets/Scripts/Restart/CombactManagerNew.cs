@@ -15,10 +15,13 @@ public class CombactManagerNew : MonoBehaviour
     public List<UnitNew> unitsAttacker, unitsDefender;
     public static List<UnitNew> allUnits;
 
+    private float startTime;
 
 
     void Start()
     {
+        startTime = Time.time;
+
         attacker.InstantiateArmy();
         defender.InstantiateArmy();
 
@@ -34,13 +37,16 @@ public class CombactManagerNew : MonoBehaviour
     private bool CheckGameEndCondition()
     {
         int currentDefenderCount = unitsDefender.Sum(unit => unit.soldiers.Count);
-        return currentDefenderCount <= initialDefenderCount * 0.2;
+        bool defendersReduced = currentDefenderCount <= initialDefenderCount * 0.2;
+        bool timeElapsed = (Time.time - startTime) >= 480; // 480 seconds = 8 minutes
+
+        return defendersReduced || timeElapsed;
     }
 
     private void EndGame()
     {
         
-        Debug.Log("Game Over: Defender's forces are reduced below 20%");
+        Debug.Log("Game Over: Defender's forces are reduced below 20% or reach 8 mins");
         //Application.Quit();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 
