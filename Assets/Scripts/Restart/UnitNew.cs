@@ -26,7 +26,9 @@ public class UnitNew : MonoBehaviour
     public UnitNew fightingTarget;
     public UnitNew commandTarget;
 
+    public static int NextID = 0;
     public int ID;
+    public bool WallCollided;
 
 
     public List<SoldierNew> soldiers;
@@ -269,6 +271,8 @@ public class UnitNew : MonoBehaviour
     #region INSTATIONATION STUFF    
     public void Instantiate(Vector3 pos, Vector3 dir, MeleeStatsHolder meleeStats, Transform soldiersHolder, GameObject soldierPrefab, ArmyNew army)
     {
+        this.ID = NextID++;
+        
         position = pos;
         direction = dir;
 
@@ -282,7 +286,9 @@ public class UnitNew : MonoBehaviour
 
         cunit = gameObject.AddComponent<CUnitNew>();
         cunit.Initialize(this, pC, meleeStats.noise, meleeStats.attackingFactor);
-        
+
+        // Log the ID and any other relevant information
+        Debug.Log("Unit instantiated with ID: " + ID + " at position: " + pos);
 
     }
     private void SetLinks(MeleeStatsHolder meleeStats, ArmyNew army)

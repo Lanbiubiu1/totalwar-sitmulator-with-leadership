@@ -55,7 +55,7 @@ public class ArmyNew : MonoBehaviour
 
     private Vector3[] res;
 
-
+    
 
 
     public string enemySoldierLayer
@@ -267,6 +267,9 @@ public class ArmyNew : MonoBehaviour
         archerUnits = new List<ArcherNew>(archersStats.Count);
         cavalryUnits = new List<UnitNew>(cavalryStats.Count);
 
+
+        //do not delete the following comment, the following comment is used to generate multiple units
+        /*
         float infantryLineDepth = 2 * GetHalfLenght(infantryStats.First().meleeHolder.soldierDistVertical, infantryStats.First().meleeHolder.startingCols);
 
         float infantryLineLength = 0;
@@ -331,8 +334,38 @@ public class ArmyNew : MonoBehaviour
                 DrawArcherAtPos(curPos, u);
             else
                 AddArcherAtPos(curPos, u, i);
+        }*/ //comment out to limit the number of unit type
+
+
+        if (infantryStats.Any())
+            {
+                var infantryStat = infantryStats.First();
+                Vector3 infantryPos = transform.position; // Modify as needed for positioning
+                if (debug)
+                    DrawMeleeAtPos(infantryPos, infantryStat);
+                else
+                    AddMeleeAtPos(infantryPos, "Infantry", infantryStat, 0, infantryUnits);
+            }
+
+        if (cavalryStats.Any())
+        {
+            var cavalryStat = cavalryStats.First();
+            Vector3 cavalryPos = transform.position + new Vector3(10, 0, 0); // Modify as needed for positioning
+            if (debug)
+                DrawMeleeAtPos(cavalryPos, cavalryStat);
+            else
+                AddMeleeAtPos(cavalryPos, "Cavalry", cavalryStat, 0, cavalryUnits);
         }
 
+        if (archersStats.Any())
+        {
+            var archerStat = archersStats.First();
+            Vector3 archerPos = transform.position + new Vector3(-10, 0, 0); // Modify as needed for positioning
+            if (debug)
+                DrawArcherAtPos(archerPos, archerStat);
+            else
+                AddArcherAtPos(archerPos, archerStat, 0);
+        }
         
         
         foreach(var archer in archerUnits){
@@ -383,7 +416,8 @@ public class ArmyNew : MonoBehaviour
 
         var unitMB = curUnit.AddComponent<UnitNew>();
         unitMB.Instantiate(pos, transform.forward, u.meleeHolder, soldiersHolder, u.soldierPrefab, this);
-        unitMB.ID = i;
+        //unitMB.ID = i;
+        //Debug.Log("Unit instantiated with ID: " + unitMB.ID + " at position: " + pos);
         list.Add(unitMB);
         units.Add(unitMB);
 
@@ -426,7 +460,8 @@ public class ArmyNew : MonoBehaviour
         curUnit.transform.parent = transform;
 
         var unitMB = AddArcherComponent(curUnit, pos, u.meleeStats.meleeHolder, u.meleeStats.soldierPrefab, u.rangedStats.rangedHolder, u.rangedStats.arrow);
-        unitMB.ID = i;
+        //unitMB.ID = i;
+        //Debug.Log("Unit instantiated with ID: " + unitMB.ID + " at position: " + pos);
         AddRangedCollider(curUnit, unitMB, u.rangedStats.rangedHolder.range);
 
         float frontExp = CalculateFrontalExpansion(u.meleeStats.meleeHolder.soldierDistVertical, u.meleeStats.meleeHolder.startingNumOfSoldiers, u.meleeStats.meleeHolder.startingCols, expansion);
