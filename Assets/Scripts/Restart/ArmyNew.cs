@@ -267,6 +267,9 @@ public class ArmyNew : MonoBehaviour
         archerUnits = new List<ArcherNew>(archersStats.Count);
         cavalryUnits = new List<UnitNew>(cavalryStats.Count);
 
+
+        //do not delete the following comment, the following comment is used to generate multiple units
+        /*
         float infantryLineDepth = 2 * GetHalfLenght(infantryStats.First().meleeHolder.soldierDistVertical, infantryStats.First().meleeHolder.startingCols);
 
         float infantryLineLength = 0;
@@ -331,8 +334,38 @@ public class ArmyNew : MonoBehaviour
                 DrawArcherAtPos(curPos, u);
             else
                 AddArcherAtPos(curPos, u, i);
+        }*/ //comment out to limit the number of unit type
+
+
+        if (infantryStats.Any())
+            {
+                var infantryStat = infantryStats.First();
+                Vector3 infantryPos = transform.position; // Modify as needed for positioning
+                if (debug)
+                    DrawMeleeAtPos(infantryPos, infantryStat);
+                else
+                    AddMeleeAtPos(infantryPos, "Infantry", infantryStat, 0, infantryUnits);
+            }
+
+        if (cavalryStats.Any())
+        {
+            var cavalryStat = cavalryStats.First();
+            Vector3 cavalryPos = transform.position + new Vector3(10, 0, 0); // Modify as needed for positioning
+            if (debug)
+                DrawMeleeAtPos(cavalryPos, cavalryStat);
+            else
+                AddMeleeAtPos(cavalryPos, "Cavalry", cavalryStat, 0, cavalryUnits);
         }
 
+        if (archersStats.Any())
+        {
+            var archerStat = archersStats.First();
+            Vector3 archerPos = transform.position + new Vector3(-10, 0, 0); // Modify as needed for positioning
+            if (debug)
+                DrawArcherAtPos(archerPos, archerStat);
+            else
+                AddArcherAtPos(archerPos, archerStat, 0);
+        }
         
         
         foreach(var archer in archerUnits){
