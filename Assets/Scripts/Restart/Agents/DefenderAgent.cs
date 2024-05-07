@@ -17,6 +17,7 @@ using System.Net;
 
 public class DefenderAgent : Agent
 {
+    public static int round = 0;
     // Public variable to reference the army, which presumably includes various units like infantry, cavalry, and archers.
     public ArmyNew army;
 
@@ -44,13 +45,18 @@ public class DefenderAgent : Agent
 
     public override void Initialize()
     {
+
+        
+        round += 1;
+        Debug.Log(round.ToString());
+        //Academy.Instance.AutomaticSteppingEnabled = false;
         minX = wall_left.transform.position.x;// + 75f;  
         maxX = wall_right.transform.position.x;// - 75f;
 
         minZ = wall_behind.transform.position.z;// + 75f;
         maxZ = wall_forward.transform.position.z;// - 75f;
-
-
+        
+        
     }
 
 
@@ -74,6 +80,7 @@ public class DefenderAgent : Agent
     public override void OnEpisodeBegin()
     {
         //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        Debug.Log("new ep");
     }
 
 
@@ -302,7 +309,7 @@ public class DefenderAgent : Agent
         ActionSegment<int> discreteActions = actionBuffers.DiscreteActions;
 
 
-        UnitNew unit = FindUnitById(discreteActions[0]);
+        UnitNew unit = FindUnitById(discreteActions[0] + 3  + 6 * (round-1));
         Vector3 newPosition;
 
         ActionSegment<float> continuousactions = actionBuffers.ContinuousActions;
@@ -347,12 +354,13 @@ public class DefenderAgent : Agent
                 unit.cunit.MoveAt(newPosition, newDirection);
 
             }
-            
 
 
- /*           if (unit.isInFight) {
+            if (unit.WallCollided) AddReward(-0.5f);
+            if (unit.isInFight)
+            {
                 combatEval(unit); //newest combat eval
-            }*/
+            }
             if (unit.state is Utils.UnitState.MOVING)
             {
                 movementEval(newPosition, unit);
@@ -453,8 +461,13 @@ public class DefenderAgent : Agent
     //      else if myunit is calvary & targettype is range: addreward(2f)
     //      else if myunit is range & targettype is range: addreward(-0.5f)
     //}
+    private void FixedUpdate()
+    {
+        Academy.Instance.EnvironmentStep();
+    }
     private void movementEval(Vector3 dest, UnitNew u)
     {
+        
         if (u.currentMoraleState is UnitNew.MoraleState.Confident || u.currentMoraleState is UnitNew.MoraleState.Impetuous
             || u.currentMoraleState is UnitNew.MoraleState.Eager)
         {
@@ -464,12 +477,12 @@ public class DefenderAgent : Agent
             if (v == v2)
             {
                 AddReward(1f);
-                Debug.Log("best");
+                //Debug.Log("best");
             }
             else if (v >= (v2 * 0.8f))
             {
                 AddReward(0.2f);
-                Debug.Log("acceptable");
+                //Debug.Log("acceptable");
             }
         }
         else
@@ -480,12 +493,12 @@ public class DefenderAgent : Agent
             if (v == v2)
             {
                 AddReward(1f);
-                Debug.Log("best");
+                //Debug.Log("best");
             }
             else if (v >= (v2 * 0.8f))
             {
                 AddReward(0.2f);
-                Debug.Log("acceptable");
+                //Debug.Log("acceptable");
             }
         }
 

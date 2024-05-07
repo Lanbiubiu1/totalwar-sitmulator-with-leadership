@@ -288,7 +288,7 @@ public class UnitNew : MonoBehaviour
         cunit.Initialize(this, pC, meleeStats.noise, meleeStats.attackingFactor);
 
         // Log the ID and any other relevant information
-        Debug.Log("Unit instantiated with ID: " + ID + " at position: " + pos);
+        //Debug.Log("Unit instantiated with ID: " + ID + " at position: " + pos);
 
     }
     private void SetLinks(MeleeStatsHolder meleeStats, ArmyNew army)

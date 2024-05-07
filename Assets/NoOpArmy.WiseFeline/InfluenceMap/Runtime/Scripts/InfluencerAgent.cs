@@ -189,6 +189,9 @@ namespace NoOpArmy.WiseFeline.InfluenceMaps
 
         private void OnDestroy()
         {
+            //ATTEMPT TO FIX RELOAD ISSUE
+            //if (!this.gameObject.scene.isLoaded) return;
+
             if (shouldRemoveInfluenceWhenMoving && AgentMap.IsMapValid() && myMapTemplate != null)
             {
                 if (!useLineOfSightWhenCalculatingInfluence)
