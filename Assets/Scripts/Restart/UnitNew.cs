@@ -26,7 +26,8 @@ public class UnitNew : MonoBehaviour
     public UnitNew fightingTarget;
     public UnitNew commandTarget;
 
-    public static int NextID = 0;
+    public static int NextID_D= 0;
+    public static int NextID_A = 0;
     public int ID;
     public bool WallCollided;
 
@@ -280,7 +281,7 @@ public class UnitNew : MonoBehaviour
     #region INSTATIONATION STUFF    
     public void Instantiate(Vector3 pos, Vector3 dir, MeleeStatsHolder meleeStats, Transform soldiersHolder, GameObject soldierPrefab, ArmyNew army)
     {
-        this.ID = NextID++;
+        
         
         position = pos;
         direction = dir;

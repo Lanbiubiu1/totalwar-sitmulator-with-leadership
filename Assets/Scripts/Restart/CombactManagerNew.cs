@@ -49,6 +49,8 @@ public class CombactManagerNew : MonoBehaviour
         Debug.Log("Game Over: Defender's forces are reduced below 20% or reach 8 mins");
         //Application.Quit();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        UnitNew.NextID_A = 0;
+        UnitNew.NextID_D = 0;
 
     }
 
