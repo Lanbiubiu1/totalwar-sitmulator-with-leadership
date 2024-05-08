@@ -304,12 +304,13 @@ public class DefenderAgent : Agent
         //}
 
 
-        army.DEBUG_MODE = true;
+        army.DEBUG_MODE = false;
 
         ActionSegment<int> discreteActions = actionBuffers.DiscreteActions;
 
 
-        UnitNew unit = FindUnitById(discreteActions[0] + 3  + 6 * (round-1));
+        //UnitNew unit = FindUnitById(discreteActions[0] + 3  + 6 * (round-1));
+        UnitNew unit = FindUnitById(discreteActions[0]);
         Vector3 newPosition;
 
         ActionSegment<float> continuousactions = actionBuffers.ContinuousActions;
@@ -423,26 +424,7 @@ public class DefenderAgent : Agent
             return (targetWorldPos, distance, signed_rotation);
         }
     }
-    
-/*    private (Vector3 targetPosition, float distance, float signed_rotation) getIdealDest(UnitNew u)
-    {
 
-        var mapPos = im.WorldToMapPosition(u.position);
-        Vector2Int targetMapPos;
-        float highestValue = im.SearchForHighestValueClosestToCenter(mapPos, 10, out targetMapPos);
-        Vector3 targetWorldPos = im.MapToWorldPosition(targetMapPos.x, targetMapPos.y);
-
-        //calculate rotation and distance to add to observation
-        Vector3 direction = targetWorldPos - u.position;
-        float distance = direction.magnitude;
-        float signed_rotation = Vector3.SignedAngle(u.transform.forward, direction.normalized, Vector3.up);
-
-        return (targetWorldPos, distance, signed_rotation);
-
-        
-        
-
-    }*/
 
 
     private void combatEval(UnitNew unit){
