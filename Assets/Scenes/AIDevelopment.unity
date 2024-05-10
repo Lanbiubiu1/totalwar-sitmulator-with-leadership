@@ -715,6 +715,8 @@ GameObject:
   - component: {fileID: 625914216}
   - component: {fileID: 625914215}
   - component: {fileID: 625914214}
+  - component: {fileID: 625914217}
+  - component: {fileID: 625914218}
   m_Layer: 0
   m_Name: ArmyDefender
   m_TagString: Untagged
@@ -777,6 +779,7 @@ MonoBehaviour:
   epsClust: 8
   expansion: 1
   DEBUG_MODE: 0
+  field: {fileID: 625914218}
   units: []
   infantryUnits: []
   cavalryUnits: []
@@ -819,7 +822,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 69
+    VectorObservationSize: 57
     NumStackedVectorObservations: 3
     m_ActionSpec:
       m_NumContinuousActions: 2
@@ -850,6 +853,42 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 20
   TakeActionsBetweenDecisions: 0
+--- !u!114 &625914217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 625914211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88b6042bc9a5d4aa58d931eae49442e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 0
+--- !u!114 &625914218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 625914211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4c537c68f9ef564c9294ad2d866af18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  armies: []
+  ally: {fileID: 625914213}
+  enemy: {fileID: 2057375787}
+  robotRadius: 10
+  KP: 10
+  ETA: 100
+  movementSpeed: 2
+  autoMove: 0
 --- !u!1 &676475568
 GameObject:
   m_ObjectHideFlags: 0
@@ -2522,6 +2561,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2057375788}
   - component: {fileID: 2057375787}
+  - component: {fileID: 2057375789}
   m_Layer: 0
   m_Name: ArmyAttacker
   m_TagString: Untagged
@@ -2569,6 +2609,7 @@ MonoBehaviour:
   epsClust: 8
   expansion: 1
   DEBUG_MODE: 0
+  field: {fileID: 2057375789}
   units: []
   infantryUnits: []
   cavalryUnits: []
@@ -2588,6 +2629,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 813537926}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &2057375789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2057375786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4c537c68f9ef564c9294ad2d866af18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  armies: []
+  ally: {fileID: 2057375787}
+  enemy: {fileID: 625914213}
+  robotRadius: 10
+  KP: 10
+  ETA: 100
+  movementSpeed: 2
+  autoMove: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

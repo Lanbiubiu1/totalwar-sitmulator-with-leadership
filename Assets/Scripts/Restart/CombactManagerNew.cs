@@ -11,8 +11,9 @@ public class CombactManagerNew : MonoBehaviour
 
     public ArmyNew attacker, defender;
     private int initialDefenderCount;
-    public field field;
-    
+    //public field attackerField;
+    //public field defenderField;
+
     public List<UnitNew> unitsAttacker, unitsDefender;
     public static List<UnitNew> allUnits;
 
@@ -32,7 +33,10 @@ public class CombactManagerNew : MonoBehaviour
 
         initialDefenderCount = unitsDefender.Sum(unit => unit.soldiers.Count);
 
-        field.InitializeField(attacker, defender);
+ /*       attackerField.InitializeField(attacker, defender);
+        defenderField.InitializeField(defender, attacker);*/
+        attacker.field.InitializeField(attacker, defender);
+        defender.field.InitializeField(defender, attacker);
 
         StartCoroutine(UpdateCombactManager());
     }

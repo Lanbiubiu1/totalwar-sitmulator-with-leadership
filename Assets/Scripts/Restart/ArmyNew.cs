@@ -45,8 +45,8 @@ public class ArmyNew : MonoBehaviour
     public float epsClust = 8;
     public float expansion = 1f;
     public bool DEBUG_MODE;
+    public field field;
 
-    
 
 
     public List<UnitNew> units;
@@ -273,7 +273,7 @@ public class ArmyNew : MonoBehaviour
         infantryUnits = new List<UnitNew>(infantryStats.Count);
         archerUnits = new List<ArcherNew>(archersStats.Count);
         cavalryUnits = new List<UnitNew>(cavalryStats.Count);
-
+        
 
         //do not delete the following comment, the following comment is used to generate multiple units
         /*
@@ -384,6 +384,7 @@ public class ArmyNew : MonoBehaviour
         foreach(var cavalry in cavalryUnits){
             cavalry.type = UnitNew.Type.Cavalry;
         }
+        //this.field.InitializeField(this, enemy);
 
         AttachScript(units);
 
