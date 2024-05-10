@@ -15,6 +15,10 @@ using UnityEngine;
 using static MeleeStats;
 using static RangedStats;
 using static Utils;
+using Unity.MLAgents;
+using Unity.MLAgents.Sensors; 
+using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Policies;
 
 
 [System.Serializable]
@@ -217,6 +221,7 @@ public class ArmyNew : MonoBehaviour
         InfluenceMapTemplate myMapTemplate = AssetDatabase.LoadAssetAtPath<InfluenceMapTemplate>("Assets/EnemyTemplate.asset");
         InfluenceMapTemplate meleeTemplate = AssetDatabase.LoadAssetAtPath<InfluenceMapTemplate>("Assets/Scripts/MeleeTemplate.asset");
         InfluenceMapTemplate rangeTemplate = AssetDatabase.LoadAssetAtPath<InfluenceMapTemplate>("Assets/Scripts/RangeTemplate.asset");
+       
         foreach (UnitNew unit in units){
              
             
@@ -237,6 +242,24 @@ public class ArmyNew : MonoBehaviour
                 }
                 unit.ID = UnitNew.NextID_D++;
                 Debug.Log("ID: " + unit.ID + " Role: " + unit.army.role);
+
+                
+                UnitAgent unitAgent = unit.gameObject.AddComponent<UnitAgent>();
+                BehaviorParameters behaviorParameters = unit.GetComponent<BehaviorParameters>();
+                DecisionRequester decisionRequester = unit.AddComponent<DecisionRequester>();
+
+                behaviorParameters.BehaviorName = "DefenderBehaviour";
+                behaviorParameters.TeamId = 0;
+                behaviorParameters.UseChildSensors = true;
+                behaviorParameters.ObservableAttributeHandling = ObservableAttributeOptions.Ignore;
+                behaviorParameters.BrainParameters.VectorObservationSize = 39;
+                behaviorParameters.BrainParameters.NumStackedVectorObservations = 2;
+                behaviorParameters.BrainParameters.ActionSpec = new ActionSpec(2, new int[] { 3 });
+
+                decisionRequester.DecisionPeriod = 10; 
+                decisionRequester.DecisionStep = 7; 
+                decisionRequester.TakeActionsBetweenDecisions = true;
+                
             }
             else
             {
