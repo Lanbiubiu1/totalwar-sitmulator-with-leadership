@@ -307,7 +307,7 @@ GameObject:
   - component: {fileID: 234989994}
   m_Layer: 0
   m_Name: Wall (1)
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -609,7 +609,7 @@ GameObject:
   - component: {fileID: 596786128}
   m_Layer: 0
   m_Name: Wall (2)
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -715,7 +715,6 @@ GameObject:
   - component: {fileID: 625914216}
   - component: {fileID: 625914215}
   - component: {fileID: 625914214}
-  - component: {fileID: 625914217}
   - component: {fileID: 625914218}
   m_Layer: 0
   m_Name: ArmyDefender
@@ -805,6 +804,7 @@ MonoBehaviour:
   wall_right: {fileID: 234989992}
   wall_behind: {fileID: 942197593}
   wall_forward: {fileID: 596786126}
+  force: 5
   defMap: {fileID: 213796992}
   attMap: {fileID: 535738002}
   confidentMap: {fileID: 789988444}
@@ -822,8 +822,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 57
-    NumStackedVectorObservations: 3
+    VectorObservationSize: 39
+    NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 2
       BranchSizes: 03000000
@@ -851,24 +851,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DecisionPeriod: 20
+  DecisionPeriod: 5
   TakeActionsBetweenDecisions: 0
---- !u!114 &625914217
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 625914211}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88b6042bc9a5d4aa58d931eae49442e5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  agentParameters:
-    maxStep: 0
-  hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
 --- !u!114 &625914218
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1242,7 +1226,7 @@ GameObject:
   - component: {fileID: 942197595}
   m_Layer: 0
   m_Name: Wall (3)
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2161,7 +2145,7 @@ GameObject:
   - component: {fileID: 1798753552}
   m_Layer: 0
   m_Name: Wall
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

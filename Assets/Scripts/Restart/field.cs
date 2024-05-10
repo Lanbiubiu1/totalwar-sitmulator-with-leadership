@@ -64,15 +64,21 @@ public class field : MonoBehaviour
     {
         Vector3 bestMove = Vector3.zero;
         float minPotential = float.MaxValue;
+        float maxPotential = float.MinValue;
 
         foreach (var motion in motions)
         {
             Vector3 nextPos = unit.transform.position + motion;
             float potential = ComputePotential(nextPos, unit);
             //Debug.Log($"Unit: {unit.name}, Next Position: {nextPos}, Potential: {potential}");
-            if (potential < minPotential)
+            /*if (potential < minPotential)
             {
                 minPotential = potential;
+                bestMove = motion;
+            }*/
+            if (potential > maxPotential)
+            {
+                maxPotential = potential;
                 bestMove = motion;
             }
         }
@@ -83,7 +89,7 @@ public class field : MonoBehaviour
         //Debug.Log($"Unit: {unit.name} current position: {unit.transform.position}");
     }
 
-    public Vector3 FindBestDir(UnitNew unit)
+    public Vector3 FindBestAttraction(UnitNew unit)
     {
         Vector3 bestMove = Vector3.zero;
         float minPotential = float.MaxValue;
@@ -92,7 +98,7 @@ public class field : MonoBehaviour
         {
             Vector3 nextPos = unit.transform.position + motion;
             float potential = ComputePotential(nextPos, unit);
-            Debug.Log($"Unit: {unit.name}, Next Position: {nextPos}, Potential: {potential}");
+            //Debug.Log($"Unit: {unit.name}, Next Position: {nextPos}, Potential: {potential}");
             if (potential < minPotential)
             {
                 minPotential = potential;
@@ -108,12 +114,36 @@ public class field : MonoBehaviour
         return bestMove;
     }
 
+    public Vector3 FindBestRepulsion(UnitNew unit)
+    {
+        Vector3 bestMove = Vector3.zero;
+        float maxPotential = float.MinValue;
+        foreach (var motion in motions)
+        {
+            Vector3 nextPos = unit.transform.position + motion;
+            float potential = ComputePotential(nextPos, unit);
+            //Debug.Log($"Unit: {unit.name}, Next Position: {nextPos}, Potential: {potential}");
+            if (potential > maxPotential)
+            {
+                maxPotential = potential;
+                bestMove = motion;
+            }
+        }
+
+        /* Vector3 target = unit.transform.position + bestMove;
+         Debug.Log($"Unit: {unit.name} moving towards {target}");
+         unit.transform.position = Vector3.MoveTowards(unit.transform.position, target, movementSpeed * Time.deltaTime);
+         Debug.Log($"Unit: {unit.name} current position: {unit.transform.position}");*/
+
+        return bestMove;
+    }
+
     void LogUnitPosition(UnitNew unit)
     {
         Debug.Log($"Unit {unit.name} at position {unit.transform.position}");
     }
 
-    float ComputePotential(Vector3 position, UnitNew unit)
+    public float ComputePotential(Vector3 position, UnitNew unit)
     {
         UnitNew closestEnemy = GetClosestEnemy(unit);
         if (closestEnemy == null)
