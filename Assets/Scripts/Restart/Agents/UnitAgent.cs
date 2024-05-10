@@ -15,22 +15,22 @@ using System.Net;
 
 
 
-public class DefenderAgent : Agent
+public class UnitAgent : Agent
 {
     //public static int round = 0;
     // Public variable to reference the army, which presumably includes various units like infantry, cavalry, and archers.
     public ArmyNew army;
-
-    public GameObject wall_left;
+    public UnitNew unit;
+/*    public GameObject wall_left;
     public GameObject wall_right;
     public GameObject wall_behind;
-    public GameObject wall_forward;
-    public float force = 5f;
-    float minX;
-    float maxX;
-    float minZ;
-    float maxZ;
-
+    public GameObject wall_forward;*/
+    public float force = 10f;
+    float minX = -75;
+    float maxX = 75;
+    float minZ = -75;
+    float maxZ = 75;
+   
     // add all the ims installed
     public InfluenceMapComponent defMap;
     public InfluenceMapComponent attMap;
@@ -41,20 +41,12 @@ public class DefenderAgent : Agent
 
     public override void Initialize()
     {
-
-        //Academy.Instance.AutomaticSteppingEnabled = false;
-        /*minX = wall_left.transform.position.x;// + 75f;  
-        maxX = wall_right.transform.position.x;// - 75f;
-
-        minZ = wall_behind.transform.position.z;// + 75f;
-        maxZ = wall_forward.transform.position.z;// - 75f;*/
-        minX = -75f;
-        maxX =  75f;
-
-        minZ = -75f;
-        maxZ = 75f;
-
-
+        defMap = GameObject.Find("DefenderMap").GetComponent<InfluenceMapComponent>();
+        attMap = GameObject.Find("AttackerMap").GetComponent<InfluenceMapComponent>();
+        confidentMap = GameObject.Find("ConfidentMap").GetComponent<InfluenceMapView>();
+        cautionMap = GameObject.Find("CautionMap").GetComponent<InfluenceMapView>();
+        army = this.transform.parent.GetComponent<ArmyNew>();
+        unit = this.GetComponent<UnitNew>();    
     }
 
 
@@ -99,24 +91,8 @@ public class DefenderAgent : Agent
     //total observation = unit counts * (12) + 3
     public override void CollectObservations(VectorSensor sensor)
     {
+        AddUnitInformation(sensor, unit);
 
-        // Add counts of each unit type to the observation vector.
-        sensor.AddObservation(army.infantryUnits.Count);// Add infantry count.
-        foreach (var i in army.infantryUnits)
-
-            AddUnitInformation(sensor, i);// 12 observations per unit
-   
-        sensor.AddObservation(army.archerUnits.Count);// Add archer count
-        foreach (var a in army.archerUnits)
-
-            AddUnitInformation(sensor, a);// 12 observations per unit
-
-
-        sensor.AddObservation(army.cavalryUnits.Count);// Add cavalry count.
-        foreach (var c in army.cavalryUnits)
-
-            AddUnitInformation(sensor, c);// 12 observations per unit
-   
     }
 
     // A method for testing and debugging. It can be used to manually input actions.
@@ -129,42 +105,20 @@ public class DefenderAgent : Agent
     }
 
     // Assuming a method to find a unit by its ID exists
-    private UnitNew FindUnitById(int id)
-    {
-        // Iterate through each unit in the units collection
-        foreach (UnitNew unit in army.units)
-        {
-            // Check if the current unit's ID matches the provided ID
-            if (unit.ID == id)
-            {
-                // If a match is found, return the current unit
-                return unit;
-            }
-        }
-
-        // If no matching unit is found, return null
-        return null;
-    }
 
     // Process actions received from the neural network. Here, a reward of 1.0f is given for any received action.
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-
-        //army.DEBUG_MODE = false;
-
-        ActionSegment<int> discreteActions = actionBuffers.DiscreteActions;
-
-        UnitNew unit = FindUnitById(discreteActions[0]);
         Vector3 newPosition;
-        
+
         // continous[0]: x-axis direction (+1 = right, -1 = left)
         // continous[1]: z-axis direction (+1 = forward, -1 = backward)
         ActionSegment<float> continuousactions = actionBuffers.ContinuousActions;
         float moveX = continuousactions[0]; // Rotation action from -1 to 1
         float moveZ = continuousactions[1]; // Distance action from -1 to 1
-        Debug.Log("unit:" + discreteActions[0].ToString() + ". direction: " + moveX.ToString() + ", " + moveZ.ToString());
+        //Debug.Log("unit:" + discreteActions[0].ToString() + ". direction: " + moveX.ToString() + ", " + moveZ.ToString());
         Vector3 move = new Vector3(moveX, 0, moveZ);// * force;
-        //Debug.Log("input direction: " + move.ToSafeString());   
+
         float step = force * Time.deltaTime; // Moving force
         newPosition = unit.transform.position + move * force;
 
@@ -173,14 +127,14 @@ public class DefenderAgent : Agent
         //move if not wavering, otherwise escape as implemented in unit
         if (unit.currentMoraleState is not UnitNew.MoraleState.Wavering)
         {
-            Debug.Log("unit" + unit.ID.ToString() + " new position: " + newPosition.ToString());
-            unit.transform.position = Vector3.Lerp(unit.transform.position, newPosition, step);
+            Debug.Log("unit" + unit.ID.ToString() + "new position: " + newPosition.ToString());
+            unit.transform.position = Vector3.MoveTowards(unit.transform.position, newPosition, step);
         }
 
         //Debug.Log(unit.WallCollided.ToString());
         //evaluate either way
 
-        ImEval(unit, newPosition);
+        /*ImEval(unit, newPosition);
         PfEval(unit, newPosition);
         if (unit.isInFight)
         {
@@ -190,7 +144,7 @@ public class DefenderAgent : Agent
         {
             //Debug.Log("crashing wall penalized");
             AddReward(-0.5f);
-        }
+        }*/
 
 
 
@@ -231,28 +185,37 @@ public class DefenderAgent : Agent
 
 
 
-    private void combatEval(UnitNew unit){
-/*        if (unit.lost_precentage < 0.5f) {
-            AddReward(-0.1f);
-        } 
-        else {AddReward(0.2f);}*/
+    private void combatEval(UnitNew unit)
+    {
+        /*        if (unit.lost_precentage < 0.5f) {
+                    AddReward(-0.1f);
+                } 
+                else {AddReward(0.2f);}*/
 
-        foreach (var enemy in unit.fightingAgainst){
-            if (unit.type == UnitNew.Type.Archer){
-                if (enemy.type == UnitNew.Type.Infantry){
+        foreach (var enemy in unit.fightingAgainst)
+        {
+            if (unit.type == UnitNew.Type.Archer)
+            {
+                if (enemy.type == UnitNew.Type.Infantry)
+                {
                     AddReward(0.2f);
                 }
             }
-            else if (unit.type == UnitNew.Type.Cavalry){
-                if (enemy.type == UnitNew.Type.Archer){
+            else if (unit.type == UnitNew.Type.Cavalry)
+            {
+                if (enemy.type == UnitNew.Type.Archer)
+                {
                     AddReward(0.2f);
                 }
-            }else if(unit.type == UnitNew.Type.Infantry){
-                if (enemy.type == UnitNew.Type.Cavalry){
-                     AddReward(0.2f);
+            }
+            else if (unit.type == UnitNew.Type.Infantry)
+            {
+                if (enemy.type == UnitNew.Type.Cavalry)
+                {
+                    AddReward(0.2f);
                 }
             }
-            
+
         }
     }
     ////    ignoring cases like melee vs melee for now
@@ -275,14 +238,14 @@ public class DefenderAgent : Agent
             var v2 = confidentMap.GetCellValue(targetPos);
             if (v == v2)
             {
-                AddReward(0.2f);
+                AddReward(1f);
                 Debug.Log("best im confidence rewarded");
             }
-/*            else if (v >= (v2 * 0.8))
-            {
-                AddReward(0.2f);
-                Debug.Log("acceptable");
-            }*/
+            /*            else if (v >= (v2 * 0.8))
+                        {
+                            AddReward(0.2f);
+                            Debug.Log("acceptable");
+                        }*/
         }
         else
         {
@@ -291,14 +254,14 @@ public class DefenderAgent : Agent
             var v2 = cautionMap.GetCellValue(targetPos);
             if (v == v2)
             {
-                AddReward(0.2f);
+                AddReward(1f);
                 Debug.Log("best caution im rewarded");
             }
-/*            else if (v >= (v2 * 0.8f))
-            {
-                AddReward(0.2f);
-                Debug.Log("acceptable");
-            }*/
+            /*            else if (v >= (v2 * 0.8f))
+                        {
+                            AddReward(0.2f);
+                            Debug.Log("acceptable");
+                        }*/
         }
     }
 
@@ -315,7 +278,7 @@ public class DefenderAgent : Agent
             if (newPotential < army.field.ComputePotential(motionDest, u))
             {
                 Debug.Log("PF attraction rewarded");
-                AddReward(0.2f);
+                AddReward(0.1f);
             }
         }
         else
@@ -328,10 +291,10 @@ public class DefenderAgent : Agent
             if (newPotential > army.field.ComputePotential(motionDest, u))
             {
                 Debug.Log("PF repulsion rewarded");
-                AddReward(0.2f);
+                AddReward(0.1f);
             }
         }
-        
+
     }
 
     private Vector3 MotionSuggestion(UnitNew u)
