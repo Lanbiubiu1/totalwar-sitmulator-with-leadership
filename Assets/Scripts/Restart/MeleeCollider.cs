@@ -7,16 +7,17 @@ using static Utils;
 public class MeleeCollider : MonoBehaviour
 {
     public UnitNew unit;
-    private bool isCurrentlyColliding;
-    private int frameCount = 0;
+    
+   
 
     private void OnTriggerEnter(Collider other)
     {
+        
         if (other.GetType() != typeof(BoxCollider)) return;
         if (other.gameObject.CompareTag("Wall"))
         {
-            Debug.Log("Enter wall");
-            isCurrentlyColliding = true;
+            //Debug.Log("Enter wall");
+            unit.WallCollided = true;
             return;
         }
 
@@ -45,8 +46,8 @@ public class MeleeCollider : MonoBehaviour
         if (other.GetType() != typeof(BoxCollider)) return;
         if (other.gameObject.CompareTag("Wall"))
         {
-            Debug.Log("stay wall");
-            isCurrentlyColliding = true;
+            //Debug.Log("stay wall");
+            unit.WallCollided = true;
             return;
         }
         Debug.DrawLine(unit.position + Vector3.up * 5, other.gameObject.transform.position + Vector3.up, Color.magenta);
@@ -57,8 +58,8 @@ public class MeleeCollider : MonoBehaviour
         if (other.GetType() != typeof(BoxCollider)) return;
         if (other.gameObject.CompareTag("Wall"))
         {
-            Debug.Log("Exit wall");
-            isCurrentlyColliding = false;
+            //Debug.Log("Exit wall");
+            unit.WallCollided = false;
             return;
         }
 
@@ -75,16 +76,6 @@ public class MeleeCollider : MonoBehaviour
             unit.fightingTarget = unit.fightingAgainst.OrderBy(en => Vector3.SqrMagnitude(en.position - unit.position)).First();
     }
 
-    private void Update()
-    {
-        frameCount++; // Increment the frame count each frame
-
-        if (frameCount >= 5)
-        {
-            unit.WallCollided = isCurrentlyColliding; // Update the 'wall' flag in the Unit script
-            frameCount = 0; // Reset the frame counter
-        }
-    }
-
+    
 
 }
