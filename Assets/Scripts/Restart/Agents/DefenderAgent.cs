@@ -373,9 +373,10 @@ public class DefenderAgent : Agent
                 newPosition.z = Mathf.Clamp(newPosition.z, minZ, maxZ);
 
                 Vector3 newDirection = (newPosition - unit.position).normalized;
-                unit.cunit.MoveAt(newPosition, newDirection);
+                //unit.cunit.MoveAt(newPosition, newDirection);
                 //unit.transform.position = Vector3.MoveTowards(unit.transform.position, newPosition, 20f * Time.deltaTime);
-
+                float step = 5f * Time.deltaTime; // Move the unit towards the target
+                unit.position = Vector3.Lerp(unit.position, newPosition, step); 
 
             }
 

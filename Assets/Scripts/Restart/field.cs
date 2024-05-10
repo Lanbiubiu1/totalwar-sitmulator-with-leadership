@@ -160,15 +160,32 @@ public class field : MonoBehaviour
     {
         UnitNew closestEnemy = null;
         float closestDistance = float.MaxValue;
-
+        UnitNew.Type counter = UnitNew.Type.Archer;
+        if (unit.type == UnitNew.Type.Cavalry)
+        {
+            counter = UnitNew.Type.Archer;
+        }
+        if (unit.type == UnitNew.Type.Archer)
+        {
+            counter = UnitNew.Type.Infantry;
+        }
+        if (unit.type == UnitNew.Type.Infantry)
+        {
+            counter = UnitNew.Type.Cavalry;
+        }
         foreach (var enemy in enemies)
         {
-            float distance = Vector3.Distance(unit.transform.position, enemy.transform.position);
-            if (distance < closestDistance)
+
+            if (enemy.type == counter)
             {
-                closestDistance = distance;
-                closestEnemy = enemy;
+                float distance = Vector3.Distance(unit.transform.position, enemy.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestEnemy = enemy;
+                }
             }
+            
         }
 
         //Debug.Log($"Closest enemy for {unit.name} is {closestEnemy?.name ?? "None"} at distance {closestDistance}");
