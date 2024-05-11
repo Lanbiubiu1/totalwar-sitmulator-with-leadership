@@ -45,11 +45,32 @@ public class CombactManagerNew : MonoBehaviour
     {
         int currentDefenderCount = unitsDefender.Sum(unit => unit.soldiers.Count);
         bool defendersReduced = currentDefenderCount <= initialDefenderCount * 0.2;
-        bool timeElapsed = (Time.time - startTime) >= 480; // 480 seconds = 8 minutes
+        bool timeElapsed = (Time.time - startTime) >= 300; // 480 seconds = 8 minutes
 
         return defendersReduced || timeElapsed;
     }
 
+/*    public void Reset()
+    {
+        //EndGame();
+        startTime = Time.time;
+
+        attacker.InstantiateArmy();
+        defender.InstantiateArmy();
+
+        unitsAttacker = attacker.units;
+        unitsDefender = defender.units;
+        allUnits = unitsAttacker.Concat(unitsDefender).ToList();
+
+        initialDefenderCount = unitsDefender.Sum(unit => unit.soldiers.Count);
+*//*
+        attackerField.InitializeField(attacker, defender);
+        defenderField.InitializeField(defender, attacker);*//*
+        attacker.field.InitializeField(attacker, defender);
+        defender.field.InitializeField(defender, attacker);
+
+        StartCoroutine(UpdateCombactManager());
+    }*/
     private void EndGame()
     {
         

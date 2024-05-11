@@ -6,17 +6,23 @@ using UnityEngine;
 public class RangedCollider : MonoBehaviour
 {
     public ArcherNew unit;
-
+    public DefenderAgent agent;
     private void OnTriggerEnter(Collider other)
     {
         if (other.GetType() != typeof(BoxCollider)) return;
 
 
         if (unit.commandTarget != null && other.GetComponentInParent<UnitNew>() == unit.commandTarget)
+        {
+            unit.state = Utils.UnitState.FIGHTING;
             unit.cunit.Stop();
+            agent.AddReward(0.5f);
+            Debug.Log("Ranged fight rewarded");
+        }
+            
 
         unit.unitsInRange.Add(other.GetComponentInParent<UnitNew>());
-
+        
     }
 
     private void OnTriggerStay(Collider other)
@@ -36,6 +42,6 @@ public class RangedCollider : MonoBehaviour
             unit.commandTarget = null;
     }
 
-
+    
 
 }

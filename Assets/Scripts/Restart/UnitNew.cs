@@ -96,10 +96,15 @@ public class UnitNew : MonoBehaviour
             away = -1;
         }
         else away = 1;
+        Vector3 backward = -1 * this.transform.forward;
         Vector3 backwardDirection = new Vector3(this.position.x, this.position.y, 75 * away).normalized;
-        Vector3 newPosition = this.position + backwardDirection * 20f;
-        this.cunit.MoveAt(newPosition, backwardDirection);
+        Vector3 newPosition = this.transform.position + backwardDirection * 20f;
+        Vector3 escDir = this.position + backward * 20f;
+        //this.cunit.MoveAt(newPosition, backwardDirection);
+
+        this.transform.position = Vector3.Lerp(this.transform.position, newPosition, 5f * Time.deltaTime);
         morale += 10; // Recover morale
+        this.state = UnitState.ESCAPING;
         Debug.Log("revocer");
         lastMoraleUpdateTime = Time.time;
         UpdateMoraleState();

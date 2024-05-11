@@ -7,30 +7,40 @@ using static Utils;
 public class MeleeCollider : MonoBehaviour
 {
     public UnitNew unit;
-    
+    public DefenderAgent agent;// = unit.transform.parent.GetComponent<DefenderAgent>();
    
 
     private void OnTriggerEnter(Collider other)
     {
-        
+        //agent = unit.transform.parent.GetComponent<DefenderAgent>();
+
         if (other.GetType() != typeof(BoxCollider)) return;
         if (other.gameObject.CompareTag("Wall"))
         {
             //Debug.Log("Enter wall");
             unit.WallCollided = true;
+            //return;
+            agent.AddReward(-.5f);
+            Debug.Log("unit " + unit.ID + " Wall collision");
             return;
+        }
+        else if (other.gameObject.CompareTag("Melee"))
+        {
+            agent.AddReward(0.2f);
+            Debug.Log("melee in fight reward");
         }
 
         if (unit.fightingAgainst.Count == 0)
             unit.fightingTarget = other.GetComponentInParent<UnitNew>();
 
         unit.fightingAgainst.Add(other.GetComponentInParent<UnitNew>());
-
+        //agent.AddReward(0.2f);
         if (!unit.isInFight)
         {
             if (!other.gameObject) return;
 
             unit.isInFight = true;
+            unit.state = UnitState.FIGHTING;
             var dir = GetVector3Down(other.transform.position - transform.position);
             float dist = dir.magnitude;
             if(dist>0)
@@ -39,6 +49,7 @@ public class MeleeCollider : MonoBehaviour
                 unit.transform.position = transform.position + dir * (dist - unit.meleeCollider.size.z + 2) / dist;
             }
         }
+        //agent.AddReward(0.5f);
     }
 
     private void OnTriggerStay(Collider other)
@@ -48,6 +59,7 @@ public class MeleeCollider : MonoBehaviour
         {
             //Debug.Log("stay wall");
             unit.WallCollided = true;
+            //agent.AddReward(-.5f);
             return;
         }
         Debug.DrawLine(unit.position + Vector3.up * 5, other.gameObject.transform.position + Vector3.up, Color.magenta);
@@ -76,6 +88,7 @@ public class MeleeCollider : MonoBehaviour
             unit.fightingTarget = unit.fightingAgainst.OrderBy(en => Vector3.SqrMagnitude(en.position - unit.position)).First();
     }
 
-    
+
+
 
 }

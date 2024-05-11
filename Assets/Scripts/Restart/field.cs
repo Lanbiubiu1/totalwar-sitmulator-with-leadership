@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst.Intrinsics;
 using UnityEngine;
 
 /*public enum ArmyRole
@@ -215,7 +216,11 @@ public class field : MonoBehaviour
                     closestEnemy = enemy;
                 }
             }
-            
+            if (closestEnemy == null)
+            {
+                closestEnemy = enemies[0];
+            }
+
         }
 
         //Debug.Log($"Closest enemy for {unit.name} is {closestEnemy?.name ?? "None"} at distance {closestDistance}");

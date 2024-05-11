@@ -77,6 +77,7 @@ public class DefenderAgent : Agent
     // Override the OnEpisodeBegin method from the Agent class. Used for resetting the environment at the start of training episodes.
     public override void OnEpisodeBegin()
     {
+        //GameObject.Find("Manager").GetComponent<CombactManagerNew>().Reset();
         //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         Debug.Log("new ep");
     }
@@ -155,6 +156,10 @@ public class DefenderAgent : Agent
         ActionSegment<int> discreteActions = actionBuffers.DiscreteActions;
 
         UnitNew unit = FindUnitById(discreteActions[0]);
+        if(unit == null)
+        {
+            return;
+        }
         Vector3 newPosition;
         
         // continous[0]: x-axis direction (+1 = right, -1 = left)
@@ -162,7 +167,7 @@ public class DefenderAgent : Agent
         ActionSegment<float> continuousactions = actionBuffers.ContinuousActions;
         float moveX = continuousactions[0]; // Rotation action from -1 to 1
         float moveZ = continuousactions[1]; // Distance action from -1 to 1
-        Debug.Log("unit:" + discreteActions[0].ToString() + ". direction: " + moveX.ToString() + ", " + moveZ.ToString());
+        //Debug.Log("unit:" + discreteActions[0].ToString() + ". direction: " + moveX.ToString() + ", " + moveZ.ToString());
         Vector3 move = new Vector3(moveX, 0, moveZ);// * force;
         //Debug.Log("input direction: " + move.ToSafeString());   
         float step = force * Time.deltaTime; // Moving force
@@ -173,24 +178,33 @@ public class DefenderAgent : Agent
         //move if not wavering, otherwise escape as implemented in unit
         if (unit.currentMoraleState is not UnitNew.MoraleState.Wavering)
         {
-            Debug.Log("unit" + unit.ID.ToString() + " new position: " + newPosition.ToString());
+            if (unit.state is Utils.UnitState.FIGHTING) return;
+            //Debug.Log("unit" + unit.ID.ToString() + " new position: " + newPosition.ToString());
             unit.transform.position = Vector3.Lerp(unit.transform.position, newPosition, step);
         }
 
         //Debug.Log(unit.WallCollided.ToString());
         //evaluate either way
 
-        ImEval(unit, newPosition);
+/*        ImEval(unit, newPosition);
         PfEval(unit, newPosition);
         if (unit.isInFight)
         {
             combatEval(unit);
         }
-        if (unit.WallCollided)
+*//*        foreach(var u in army.units)
         {
-            //Debug.Log("crashing wall penalized");
-            AddReward(-0.5f);
-        }
+            if (u.WallCollided)
+            {
+                Debug.Log("unit " + unit.ID + " crashing wall penalized");
+                AddReward(-0.5f);
+            }
+        }*/
+/*        if (unit.WallCollided)
+        {
+            Debug.Log("unit " + unit.ID + " crashing wall penalized");
+            AddReward(-0.05f);
+        }*/
 
 
 
@@ -232,24 +246,20 @@ public class DefenderAgent : Agent
 
 
     private void combatEval(UnitNew unit){
-/*        if (unit.lost_precentage < 0.5f) {
-            AddReward(-0.1f);
-        } 
-        else {AddReward(0.2f);}*/
 
         foreach (var enemy in unit.fightingAgainst){
             if (unit.type == UnitNew.Type.Archer){
                 if (enemy.type == UnitNew.Type.Infantry){
-                    AddReward(0.2f);
+                    AddReward(0.02f);
                 }
             }
             else if (unit.type == UnitNew.Type.Cavalry){
                 if (enemy.type == UnitNew.Type.Archer){
-                    AddReward(0.2f);
+                    AddReward(0.02f);
                 }
             }else if(unit.type == UnitNew.Type.Infantry){
                 if (enemy.type == UnitNew.Type.Cavalry){
-                     AddReward(0.2f);
+                     AddReward(0.02f);
                 }
             }
             
@@ -275,7 +285,7 @@ public class DefenderAgent : Agent
             var v2 = confidentMap.GetCellValue(targetPos);
             if (v == v2)
             {
-                AddReward(0.2f);
+                AddReward(0.02f);
                 Debug.Log("best im confidence rewarded");
             }
 /*            else if (v >= (v2 * 0.8))
@@ -291,7 +301,7 @@ public class DefenderAgent : Agent
             var v2 = cautionMap.GetCellValue(targetPos);
             if (v == v2)
             {
-                AddReward(0.2f);
+                AddReward(0.02f);
                 Debug.Log("best caution im rewarded");
             }
 /*            else if (v >= (v2 * 0.8f))
@@ -315,7 +325,7 @@ public class DefenderAgent : Agent
             if (newPotential < army.field.ComputePotential(motionDest, u))
             {
                 Debug.Log("PF attraction rewarded");
-                AddReward(0.2f);
+                AddReward(0.02f);
             }
         }
         else
@@ -328,7 +338,7 @@ public class DefenderAgent : Agent
             if (newPotential > army.field.ComputePotential(motionDest, u))
             {
                 Debug.Log("PF repulsion rewarded");
-                AddReward(0.2f);
+                AddReward(0.02f);
             }
         }
         
@@ -379,6 +389,11 @@ public class DefenderAgent : Agent
                 }
             }
 
+        }
+        if(closestEnemy == null)
+        {
+            if (army.enemy.units.Count == 0) return Vector3.zero;
+            closestEnemy = army.enemy.units[0];
         }
         Vector3 dir = closestEnemy.position - unit.transform.position;
 

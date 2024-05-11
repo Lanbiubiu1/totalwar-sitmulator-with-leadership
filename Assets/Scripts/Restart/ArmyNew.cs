@@ -506,6 +506,8 @@ public class ArmyNew : MonoBehaviour
         rangedCollider.transform.parent = go.transform;
         rangedCollider.transform.localPosition = Vector3.zero;
         rangedCollider.AddComponent<RangedCollider>().unit = u;
+
+        rangedCollider.GetComponent<RangedCollider>().agent = GameObject.Find("ArmyDefender").GetComponent<DefenderAgent>();
         rangedCollider.layer = LayerMask.NameToLayer(allyUnitLayer);
         var cColl = rangedCollider.AddComponent<SphereCollider>();
         cColl.radius = range;
@@ -527,6 +529,8 @@ public class ArmyNew : MonoBehaviour
         meleeCollider.transform.parent = go.transform;
         meleeCollider.transform.localPosition = Vector3.zero;
         meleeCollider.AddComponent<MeleeCollider>().unit = u;
+        //update here
+        meleeCollider.GetComponent<MeleeCollider>().agent = GameObject.Find("ArmyDefender").GetComponent<DefenderAgent>();
         meleeCollider.layer = LayerMask.NameToLayer(allyUnitLayer);
         var bColl = meleeCollider.AddComponent<BoxCollider>();
         bColl.size = new Vector3(2 * latExp, 2, 2 * frontExp);
