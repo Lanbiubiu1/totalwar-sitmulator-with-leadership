@@ -11,6 +11,7 @@ public class CombactManagerNew : MonoBehaviour
 
     public ArmyNew attacker, defender;
     private int initialDefenderCount;
+    private int initialAttackerCount;
     //public field attackerField;
     //public field defenderField;
 
@@ -32,9 +33,10 @@ public class CombactManagerNew : MonoBehaviour
         allUnits = unitsAttacker.Concat(unitsDefender).ToList();
 
         initialDefenderCount = unitsDefender.Sum(unit => unit.soldiers.Count);
+        initialAttackerCount = unitsAttacker.Sum(unit => unit.soldiers.Count);
 
- /*       attackerField.InitializeField(attacker, defender);
-        defenderField.InitializeField(defender, attacker);*/
+        /*       attackerField.InitializeField(attacker, defender);
+               defenderField.InitializeField(defender, attacker);*/
         attacker.field.InitializeField(attacker, defender);
         defender.field.InitializeField(defender, attacker);
 
@@ -44,10 +46,12 @@ public class CombactManagerNew : MonoBehaviour
     private bool CheckGameEndCondition()
     {
         int currentDefenderCount = unitsDefender.Sum(unit => unit.soldiers.Count);
-        bool defendersReduced = currentDefenderCount <= initialDefenderCount * 0.2;
+        bool defendersReduced = currentDefenderCount <= initialDefenderCount * 0.3;
+        int currentAttackerCount = unitsDefender.Sum(unit => unit.soldiers.Count);
+        bool attackersReduced = currentAttackerCount <= initialAttackerCount * 0.3;
         bool timeElapsed = (Time.time - startTime) >= 300; // 480 seconds = 8 minutes
 
-        return defendersReduced || timeElapsed;
+        return defendersReduced || timeElapsed || attackersReduced;
     }
 
 /*    public void Reset()
@@ -74,7 +78,7 @@ public class CombactManagerNew : MonoBehaviour
     private void EndGame()
     {
         
-        Debug.Log("Game Over: Defender's forces are reduced below 20% or reach 8 mins");
+        Debug.Log("Game Over: Defender or Attacker forces are reduced below 20% or reach 5 mins");
         //Application.Quit();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         UnitNew.NextID_A = 0;
